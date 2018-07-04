@@ -7,7 +7,7 @@ import java.util.Map;
  */
 public class EngineQueryProxy extends EngineQuery {
 
-    EngineQueryProxy(Map<String,String> requestParams) {
+    public EngineQueryProxy(Map<String,String> requestParams) {
         super(requestParams);
     }
 
