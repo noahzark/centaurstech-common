@@ -59,10 +59,9 @@ public class ChatApi {
         return result;
     }
 
-    public String sendJson(String queryResultType, JSONObject jsonObject) throws Exception {
+    public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt) throws Exception {
         String ticket = UUID.randomUUID().toString();
 
-        String SERVER_SALT = " QUERY_RESULT_SALT";
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String time = Long.toString(timestamp.getTime());
         jsonObject.put("search_result_type", queryResultType);
@@ -71,7 +70,7 @@ public class ChatApi {
                 .add("data", jsonObject.toString())
                 .add("key", ticket)
                 .add("timestamp",time)
-                .add("secret",Md5.digest(time + SERVER_SALT))
+                .add("secret",Md5.digest(time + serverSalt))
                 .add("resulttype", queryResultType)
                 .build();
 

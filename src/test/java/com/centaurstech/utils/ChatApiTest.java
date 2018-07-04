@@ -31,7 +31,9 @@ public class ChatApiTest {
         ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("hello", "world");
-        String ticket = chatApi.sendJson("test_result_type", jsonObject);
+
+        String SERVER_SALT = " QUERY_RESULT_SALT";
+        String ticket = chatApi.sendJson("test_result_type", jsonObject, SERVER_SALT);
         assertThat(ticket, is(IsNull.notNullValue()));
     }
 
