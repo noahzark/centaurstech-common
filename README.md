@@ -1,7 +1,7 @@
 # centaurstech-common
 Centaurs Technologies Common Libraries
 
-[![](https://jitpack.io/v/noahzark/centaurstech-common.svg)](https://jitpack.io/#noahzark/centaurstech-common)
+使用方法 [![](https://jitpack.io/v/noahzark/centaurstech-common.svg)](https://jitpack.io/#noahzark/centaurstech-common)
 
 # domain包
 
