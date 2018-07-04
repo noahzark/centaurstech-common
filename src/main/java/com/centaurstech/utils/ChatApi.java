@@ -43,7 +43,7 @@ public class ChatApi {
 
         Response response = client.newCall(request).execute();
         String res = response.body().string();
-        System.out.println(res);
+        // System.out.println(res);
 
         JSONObject result = new JSONObject(res);
         /*
