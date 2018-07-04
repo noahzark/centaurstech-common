@@ -37,7 +37,6 @@ public class ChatApi {
         Request request = new Request.Builder()
                 .url(server)
                 .post(body)
-                .addHeader("content-type", "application/x-www-form-urlencoded")
                 .addHeader("cache-control", "no-cache")
                 .build();
 
