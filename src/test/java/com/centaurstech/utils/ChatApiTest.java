@@ -14,8 +14,8 @@ public class ChatApiTest {
 
     @Test
     public void testChatApi() throws Exception {
-        String appkey = "open-demo";
-        String appsecret = "123456789";
+        String appkey = "match-cps";
+        String appsecret = "8060ee6ba5ea4bdeb0040d0317fd2cbf";
         String nickname = "common-lib-test";
 
         String uid = GetNetworkAddress.GetAddress("mac");
@@ -28,7 +28,7 @@ public class ChatApiTest {
 
     @Test
     public void testSendJson() throws Exception {
-        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat");
+        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/data");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("hello", "world");
 

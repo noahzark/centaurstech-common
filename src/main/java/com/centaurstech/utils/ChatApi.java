@@ -1,6 +1,7 @@
 package com.centaurstech.utils;
 
 import okhttp3.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Timestamp;
@@ -28,6 +29,7 @@ public class ChatApi {
 
         Response response = client.newCall(request).execute();
         String res = response.body().string();
+        System.out.println(res);
 
         return res;
     }
@@ -69,14 +71,19 @@ public class ChatApi {
         FormBody body = new FormBody.Builder()
                 .add("data", jsonObject.toString())
                 .add("key", ticket)
-                .add("timestamp",time)
-                .add("secret",Md5.digest(time + serverSalt))
+                .add("timestamp", time)
+                .add("secret", Md5.digest(time + serverSalt))
                 .add("resulttype", queryResultType)
                 .build();
 
         String resStr = postForString(body);
-        JSONObject resJson = new JSONObject(resStr);
-        if(resJson.has("retcode")){
+        JSONObject resJson = null;
+        try {
+            resJson = new JSONObject(resStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(resJson != null && resJson.has("retcode")){
             if(0 == resJson.getInt("retcode")){
                 return ticket;
             }
