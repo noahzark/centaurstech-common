@@ -1,5 +1,7 @@
 package com.centaurstech.domain;
 
+import com.centaurstech.utils.TimeUtil;
+
 import java.util.Calendar;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public abstract class EngineQuery {
     long processTime;
 
     EngineQuery() {
-        beginTime = Calendar.getInstance().getTimeInMillis();
+        beginTime = TimeUtil.nowInMillis();
     }
 
     EngineQuery(Map<String,String> requestParams) {
@@ -44,7 +46,7 @@ public abstract class EngineQuery {
     }
 
     public long getQueryTime() {
-        return processTime = Calendar.getInstance().getTimeInMillis() - beginTime;
+        return processTime = TimeUtil.nowInMillis() - beginTime;
     }
 
     public String getQueryTimeString() {

@@ -17,6 +17,10 @@ public class TimeUtil {
         MONTH
     }
 
+    public static long nowInMillis() {
+        return Calendar.getInstance().getTimeInMillis();
+    }
+
     public static Date beginOfToday(){
         final Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
