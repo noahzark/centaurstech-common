@@ -82,4 +82,9 @@ public class QueryResult {
 		this.process = "nextStep=" + nextStep;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("Query result: -solution: %s -status: %d -process: %s", solution, status, process);
+	}
+
 }
