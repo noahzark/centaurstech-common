@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Created by Feliciano on 2/7/2018.
  */
-public class TimeUtil {
+public class TimeCalculator {
 
     public enum Period {
         DAY,
@@ -30,32 +30,32 @@ public class TimeUtil {
 
     public static Date beginOfDay(int day){
         final Calendar cal = Calendar.getInstance();
-        cal.setTime(TimeUtil.beginOfToday());
+        cal.setTime(TimeCalculator.beginOfToday());
         cal.add(Calendar.DATE, day);
         return cal.getTime();
     }
 
     public static Date endOfDay(int day){
         final Calendar cal = Calendar.getInstance();
-        cal.setTime(TimeUtil.beginOfDay(day + 1));
+        cal.setTime(TimeCalculator.beginOfDay(day + 1));
         cal.add(Calendar.MILLISECOND, -1);
         return cal.getTime();
     }
 
     public static Date beginOfYesterday() {
-        return TimeUtil.beginOfDay(-1);
+        return TimeCalculator.beginOfDay(-1);
     }
 
     public static Date endOfToday(){
-        return TimeUtil.endOfDay(0);
+        return TimeCalculator.endOfDay(0);
     }
 
     public static Date beginOfLast7Days(){
-        return TimeUtil.beginOfDay(-7);
+        return TimeCalculator.beginOfDay(-7);
     }
 
     public static Date beginOfLast30Days(){
-        return TimeUtil.beginOfDay(-30);
+        return TimeCalculator.beginOfDay(-30);
     }
 
     public static String getTimeString(Date date, String zoneId) {
