@@ -4,6 +4,8 @@ import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -20,7 +22,7 @@ public class ChatApi {
         this.server = server;
     }
 
-    private String postForString(FormBody body) throws Exception {
+    private String postForString(FormBody body) throws IOException {
         Request request = new Request.Builder()
                 .url(server)
                 .post(body)
@@ -35,7 +37,7 @@ public class ChatApi {
     }
 
     public JSONObject chat(String appkey, String appsecret,
-                                       String uid, String nickname, String ask) throws Exception {
+                                       String uid, String nickname, String ask) throws IOException {
         // Prepare verify string
         String now = (new Date()).getTime() + "";
         String verify = Md5.digest(appsecret + uid + now);
@@ -61,7 +63,7 @@ public class ChatApi {
         return result;
     }
 
-    public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt) throws Exception {
+    public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt) throws IOException {
         String ticket = UUID.randomUUID().toString();
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -89,6 +91,28 @@ public class ChatApi {
             }
         }
         return null;
+    }
+
+    public String engineChat(String action, Map<String, String> data) throws IOException {
+        FormBody.Builder bodyBuilder = new FormBody.Builder().add("action", "start");
+        for (String entry : data.keySet()) {
+            bodyBuilder.add(entry, data.get(entry));
+        }
+        FormBody body = bodyBuilder.build();
+
+        String resStr = postForString(body);
+        return resStr;
+    }
+
+    public JSONObject engineChatJson(String action, Map<String, String> data) throws IOException {
+        String resStr = engineChat(action, data);
+        JSONObject resJson = null;
+        try {
+            resJson = new JSONObject(resStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return resJson;
     }
 
 }
