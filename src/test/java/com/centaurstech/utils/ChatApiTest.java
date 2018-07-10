@@ -4,6 +4,9 @@ import org.hamcrest.core.IsNull;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -35,6 +38,18 @@ public class ChatApiTest {
         String SERVER_SALT = " QUERY_RESULT_SALT";
         String ticket = chatApi.sendJson("test_result_type", jsonObject, SERVER_SALT);
         assertThat(ticket, is(IsNull.notNullValue()));
+    }
+
+    @Test
+    public void testEngineLogin() throws Exception {
+        ChatApi chatApi = new ChatApi("http://robot-engine-test.centaurstech.com/xxx");
+        HashMap<String, String> loginRequest = new HashMap<>();
+        loginRequest.put("aipioneer_username", "xxx");
+        loginRequest.put("nickname", "landey");
+        JSONObject result = chatApi.engineChatJson("start", loginRequest);
+
+        assertThat(result, is(IsNull.notNullValue()));
+        assertThat(result.has("chat_key"), is(true));
     }
 
 }
