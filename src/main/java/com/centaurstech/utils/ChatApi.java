@@ -94,7 +94,9 @@ public class ChatApi {
     }
 
     public String engineChat(String action, Map<String, String> data) throws IOException {
-        FormBody.Builder bodyBuilder = new FormBody.Builder().add("action", "start");
+        FormBody.Builder bodyBuilder = new FormBody.Builder()
+                .add("action", action)
+                .add("format", "json");
         for (String entry : data.keySet()) {
             bodyBuilder.add(entry, data.get(entry));
         }
