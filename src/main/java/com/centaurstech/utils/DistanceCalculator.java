@@ -13,15 +13,15 @@ public class DistanceCalculator {
         return deg*(Math.PI/180);
     }
 
-    public double distanceBetween(GPSLocation source, GPSLocation target) {
+    public static double distanceBetween(GPSLocation source, GPSLocation target) {
         return distanceBetween(source.getLat(), source.getLng(), target.getLat(), target.getLng());
     }
 
-    public double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng) {
+    public static double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng) {
         return distanceBetween(sourceLat, sourceLng, targetLat, targetLng, EARTH_RADIUS_IN_KM);
     }
 
-    public double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng, int radius) {
+    public static double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng, int radius) {
         double dLat = deg2rad(targetLat - sourceLat);
         double dLon = deg2rad(targetLng - sourceLng);
         double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
