@@ -7,21 +7,21 @@ import com.centaurstech.domain.GPSLocation;
  */
 public class DistanceCalculator {
 
-    static int EARTH_RADIUS_IN_KM = 6371;
+    public static int EARTH_RADIUS_IN_KM = 6371;
 
     private static double deg2rad(double deg){
         return deg*(Math.PI/180);
     }
 
-    double distanceBetween(GPSLocation source, GPSLocation target) {
+    public double distanceBetween(GPSLocation source, GPSLocation target) {
         return distanceBetween(source.getLat(), source.getLng(), target.getLat(), target.getLng());
     }
 
-    double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng) {
+    public double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng) {
         return distanceBetween(sourceLat, sourceLng, targetLat, targetLng, EARTH_RADIUS_IN_KM);
     }
 
-    double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng, int radius) {
+    public double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng, int radius) {
         double dLat = deg2rad(targetLat - sourceLat);
         double dLon = deg2rad(targetLng - sourceLng);
         double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
