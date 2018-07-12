@@ -58,7 +58,7 @@ public abstract class EngineQuery {
      * @param key
      * @return
      */
-    static Boolean hasValue(Map<String,String> requestParams, String key) {
+    public static Boolean hasValue(Map<String,String> requestParams, String key) {
         String result = requestParams.getOrDefault(key, null);
         if (result != null && !result.isEmpty()) {
             return true;
@@ -72,7 +72,7 @@ public abstract class EngineQuery {
      * @param keys
      * @return
      */
-    static String getStringValue(Map<String, String> requestParams, String... keys) {
+    public static String getStringValue(Map<String, String> requestParams, String... keys) {
         for (String key : keys) {
             if (hasValue(requestParams, key)) {
                 return requestParams.get(key);
