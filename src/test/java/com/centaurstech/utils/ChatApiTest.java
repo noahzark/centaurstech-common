@@ -1,5 +1,6 @@
 package com.centaurstech.utils;
 
+import com.centaurstech.domain.GPSLocation;
 import org.hamcrest.core.IsNull;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -17,8 +18,8 @@ public class ChatApiTest {
 
     @Test
     public void testChatApi() throws Exception {
-        String appkey = "match-cps";
-        String appsecret = "8060ee6ba5ea4bdeb0040d0317fd2cbf";
+        String appkey = "qiwurobot";
+        String appsecret = "123456";
         String nickname = "common-lib-test";
 
         String uid = GetNetworkAddress.GetAddress("mac");
@@ -41,10 +42,20 @@ public class ChatApiTest {
     }
 
     @Test
+    public void testSendGPS() throws Exception {
+        GPSLocation location = new GPSLocation(1d, 2d);
+
+        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/geo");
+
+        String msg = chatApi.sendGPS("qiwurobot", "123456", "common-lib-test", location);
+        assertThat(msg, is("added"));
+    }
+
+    @Test
     public void testEngineLogin() throws Exception {
-        ChatApi chatApi = new ChatApi("http://robot-engine-test.centaurstech.com/xxx");
+        ChatApi chatApi = new ChatApi("http://qcloud-sh1.chewrobot.com/goingchatcn/chatbotserver.php");
         HashMap<String, String> loginRequest = new HashMap<>();
-        loginRequest.put("aipioneer_username", "xxx");
+        loginRequest.put("aipioneer_username", "mimi2");
         loginRequest.put("nickname", "landey");
         JSONObject result = chatApi.engineChatJson("start", loginRequest);
 
