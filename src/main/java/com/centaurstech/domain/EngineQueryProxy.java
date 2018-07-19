@@ -7,6 +7,10 @@ import java.util.Map;
  */
 public class EngineQueryProxy extends EngineQuery {
 
+    public EngineQueryProxy(String chat_key) {
+        super(chat_key);
+    }
+
     public EngineQueryProxy(Map<String,String> requestParams) {
         super(requestParams);
     }
