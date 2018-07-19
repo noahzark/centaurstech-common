@@ -19,6 +19,9 @@ public class EngineQueryTest {
         EngineQuery engineQuery = new EngineQueryProxy(requestParam);
 
         assertThat(engineQuery.getChatKey(), is("123456"));
+
+        engineQuery = new EngineQueryProxy("123456@@@987654");
+        assertThat(engineQuery.getChatKey(), is("123456"));
     }
 
 }
