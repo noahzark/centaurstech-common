@@ -28,12 +28,16 @@ public abstract class EngineQuery {
         beginTime = TimeCalculator.nowInMillis();
     }
 
-    EngineQuery(Map<String,String> requestParams) {
+    EngineQuery(String chat_key) {
         this();
-        chatKey = requestParams.get("chat_key");
+        chatKey = chat_key;
         if (chatKey.contains("@@@")) {
             chatKey = chatKey.substring(0, chatKey.indexOf("@@@"));
         }
+    }
+
+    EngineQuery(Map<String,String> requestParams) {
+        this(requestParams.get("chat_key"));
     }
 
     public String getChatKey() {
@@ -49,7 +53,7 @@ public abstract class EngineQuery {
     }
 
     public String getQueryTimeString() {
-        return "Query takes " + getQueryTime() + "ms";
+        return "Query " + chatKey + " takes " + getQueryTime() + "ms";
     }
 
     /**
