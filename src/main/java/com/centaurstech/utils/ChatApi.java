@@ -1,5 +1,6 @@
 package com.centaurstech.utils;
 
+import com.centaurstech.domain.GPSLocation;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,13 +17,16 @@ public class ChatApi {
 
     private OkHttpClient client = new OkHttpClient();
 
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+
     String server;
 
     public ChatApi(String server) {
         this.server = server;
     }
 
-    private String postForString(FormBody body) throws IOException {
+    private String postForString(RequestBody body) throws IOException {
         Request request = new Request.Builder()
                 .url(server)
                 .post(body)
@@ -34,6 +38,22 @@ public class ChatApi {
         // System.out.println(res);
 
         return res;
+    }
+
+    private JSONObject postForJSON(RequestBody body) throws IOException {
+        String resStr = postForString(body);
+        try {
+            JSONObject resJson = new JSONObject(resStr);
+            if(resJson != null && resJson.has("retcode")){
+                if(0 == resJson.getInt("retcode")){
+                    return resJson;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public JSONObject chat(String appkey, String appsecret,
@@ -79,17 +99,33 @@ public class ChatApi {
                 .build();
 
         String resStr = postForString(body);
-        JSONObject resJson = null;
-        try {
-            resJson = new JSONObject(resStr);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        JSONObject resJson = postForJSON(body);
+        if (resJson != null) {
+            return ticket;
         }
-        if(resJson != null && resJson.has("retcode")){
-            if(0 == resJson.getInt("retcode")){
-                return ticket;
-            }
+        return null;
+    }
+
+    public String sendGPS(String appkey, String appsecret, String uid, GPSLocation location) throws IOException {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String time = Long.toString(timestamp.getTime());
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("appkey", appkey);
+        jsonObject.put("timestamp", time);
+        jsonObject.put("uid", uid);
+        jsonObject.put("timestamp", time);
+        jsonObject.put("geo[lat]", location.getLat());
+        jsonObject.put("geo[lng]", location.getLng());
+        jsonObject.put("verify", Md5.digest(appsecret + uid + time));
+
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+
+        JSONObject resJson = postForJSON(body);
+        if (resJson != null && resJson.has("msg")) {
+            return resJson.getString("msg");
         }
+
         return null;
     }
 
