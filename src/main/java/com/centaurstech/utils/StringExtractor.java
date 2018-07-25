@@ -1,7 +1,5 @@
 package com.centaurstech.utils;
 
-import com.centaurstech.domain.BasicAuthContent;
-
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

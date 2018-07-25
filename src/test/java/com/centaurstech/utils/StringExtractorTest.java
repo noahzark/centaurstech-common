@@ -1,6 +1,6 @@
 package com.centaurstech.utils;
 
-import com.centaurstech.domain.BasicAuthContent;
+import com.centaurstech.domain.BasicAuthData;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -10,7 +10,7 @@ public class StringExtractorTest {
 
     @Test
     public void testBasicAuth() throws Exception {
-        BasicAuthContent basicAuthContent = BasicAuthContent.fromString("Basic dGVzdDoxMjM0NTY=");
+        BasicAuthData basicAuthContent = BasicAuthData.fromString("Basic dGVzdDoxMjM0NTY=");
         assertThat(basicAuthContent.getUsername(), is("test"));
         assertThat(basicAuthContent.getPassword(), is("123456"));
     }

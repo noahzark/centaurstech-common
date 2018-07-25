@@ -2,18 +2,18 @@ package com.centaurstech.domain;
 
 import com.centaurstech.utils.StringExtractor;
 
-public class BasicAuthContent {
+public class BasicAuthData {
     String username;
     String password;
 
-    BasicAuthContent(String data) {
+    BasicAuthData(String data) {
         String[] result = StringExtractor.extractBasicAuth(data);
         username = result[0];
         password = result[1];
     }
 
-    public static BasicAuthContent fromString(String data) {
-        return new BasicAuthContent(data);
+    public static BasicAuthData fromString(String data) {
+        return new BasicAuthData(data);
     }
 
     public String getUsername() {
