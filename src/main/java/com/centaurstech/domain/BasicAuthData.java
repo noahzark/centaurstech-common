@@ -9,11 +9,19 @@ public class BasicAuthData {
     BasicAuthData(String data) {
         String[] result = StringExtractor.extractBasicAuth(data);
         username = result[0];
-        password = result[1];
+        if (result.length == 2) {
+            password = result[1];
+        } else {
+            password = "";
+        }
     }
 
     public static BasicAuthData fromString(String data) {
-        return new BasicAuthData(data);
+        try {
+            return new BasicAuthData(data);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String getUsername() {

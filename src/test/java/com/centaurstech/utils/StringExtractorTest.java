@@ -1,6 +1,7 @@
 package com.centaurstech.utils;
 
 import com.centaurstech.domain.BasicAuthData;
+import org.hamcrest.core.IsNull;
 import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -13,6 +14,13 @@ public class StringExtractorTest {
         BasicAuthData basicAuthContent = BasicAuthData.fromString("Basic dGVzdDoxMjM0NTY=");
         assertThat(basicAuthContent.getUsername(), is("test"));
         assertThat(basicAuthContent.getPassword(), is("123456"));
+
+        basicAuthContent = BasicAuthData.fromString("Basic dGVzdDo=");
+        assertThat(basicAuthContent.getUsername(), is("test"));
+        assertThat(basicAuthContent.getPassword(), is(""));
+
+        basicAuthContent = BasicAuthData.fromString("dGVzdDo=");
+        assertThat(basicAuthContent, is(IsNull.nullValue()));
     }
 
     @Test
