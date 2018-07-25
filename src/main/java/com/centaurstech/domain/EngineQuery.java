@@ -5,6 +5,7 @@ import com.centaurstech.utils.TimeCalculator;
 import java.util.Map;
 
 /**
+ * Engine query form super class
  * Created by Feliciano on 7/5/2017.
  */
 public abstract class EngineQuery {
@@ -24,11 +25,11 @@ public abstract class EngineQuery {
      */
     long processTime;
 
-    EngineQuery() {
+    public EngineQuery() {
         beginTime = TimeCalculator.nowInMillis();
     }
 
-    EngineQuery(String chat_key) {
+    public EngineQuery(String chat_key) {
         this();
         chatKey = chat_key;
         if (chatKey.contains("@@@")) {
@@ -36,7 +37,7 @@ public abstract class EngineQuery {
         }
     }
 
-    EngineQuery(Map<String,String> requestParams) {
+    public EngineQuery(Map<String,String> requestParams) {
         this(requestParams.get("chat_key"));
     }
 

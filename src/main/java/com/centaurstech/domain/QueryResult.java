@@ -1,6 +1,7 @@
 package com.centaurstech.domain;
 
 /**
+ * All engine query result must extend this class
  * Created by BigYuki on 2017/3/14.
  * Updated by Feliciano Long
  */
