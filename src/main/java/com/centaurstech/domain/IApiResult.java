@@ -3,7 +3,7 @@ package com.centaurstech.domain;
 /**
  * All centaurs backend api result must implement this interface
  */
-public interface ApiResult {
+public interface IApiResult {
 
     Integer getRetcode();
 
