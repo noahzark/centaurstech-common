@@ -5,8 +5,7 @@ package com.centaurstech.domain;
  * Created by BigYuki on 2017/3/14.
  * Updated by Feliciano Long
  */
-@Deprecated
-public class QueryResult {
+public class EngineQueryResult {
     private String solution;
     private int status;
     private String process;
@@ -14,7 +13,7 @@ public class QueryResult {
     /**
      * Initialize query result attributes
      */
-    public QueryResult() {
+    public EngineQueryResult() {
         this.solution = "我不知道你在说什么。";
         this.status = 0;
         this.process = "";
@@ -25,7 +24,7 @@ public class QueryResult {
      *
      * @param solution Query result solution (answer returned to engine)
      */
-    public QueryResult(String solution) {
+    public EngineQueryResult(String solution) {
         this();
         setSolution(solution);
     }
@@ -36,7 +35,7 @@ public class QueryResult {
      * @param solution Answer string
      * @param process  Next step
      */
-    public QueryResult(String solution, String process) {
+    public EngineQueryResult(String solution, String process) {
         this(solution);
         setProcess(process);
     }
@@ -47,7 +46,7 @@ public class QueryResult {
      * @param solution Answer string
      * @param status   Exception status code
      */
-    public QueryResult(String solution, int status) {
+    public EngineQueryResult(String solution, int status) {
         this(solution);
         setStatus(status);
     }
@@ -59,7 +58,7 @@ public class QueryResult {
      * @param process  Next step
      * @param status   Exception status code
      */
-    public QueryResult(String solution, String process, int status) {
+    public EngineQueryResult(String solution, String process, int status) {
         this(solution, process);
         setStatus(status);
     }
