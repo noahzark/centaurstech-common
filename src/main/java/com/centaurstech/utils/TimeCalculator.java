@@ -21,6 +21,10 @@ public class TimeCalculator {
         return Calendar.getInstance().getTimeInMillis();
     }
 
+    public static long nowInSeconds() {
+        return Calendar.getInstance().getTimeInMillis() / 1000L;
+    }
+
     public static Date beginOfToday(){
         final Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
