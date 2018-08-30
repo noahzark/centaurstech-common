@@ -10,6 +10,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static com.centaurstech.utils.QueryHelper.urlEncodeUTF8;
+
 /**
  * Created by Feliciano on 7/3/2018.
  */
@@ -26,11 +28,61 @@ public class ChatApi {
         this.server = server;
     }
 
+    private Request.Builder buildRequest(Map<String, String> headers, Map<String, String> queries) {
+        String queryParameters = "";
+        if (queries != null && queries.size() > 0) {
+            queryParameters = "?" + queries.entrySet().stream()
+                    .map(p -> urlEncodeUTF8(p.getKey()) + "=" + urlEncodeUTF8(p.getValue()))
+                    .reduce((p1, p2) -> p1 + "&" + p2)
+                    .orElse("");
+        }
+
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(server + queryParameters);
+
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                requestBuilder.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return requestBuilder;
+    }
+
+    private String getForString(Map<String, String> headers, Map<String, String> queries) throws IOException {
+        Request request = buildRequest(headers, queries)
+                .get()
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String res = response.body().string();
+        // System.out.println(res);
+
+        return res;
+    }
+
+    private JSONObject getForJSON(Map<String, String> headers, Map<String, String> queries) throws IOException {
+        String resStr = getForString(headers, queries);
+        try {
+            JSONObject resJson = new JSONObject(resStr);
+            if(resJson != null && resJson.has("retcode")){
+                if(0 == resJson.getInt("retcode")){
+                    return resJson;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     private String postForString(RequestBody body) throws IOException {
-        Request request = new Request.Builder()
-                .url(server)
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("cache-control", "no-cache");
+
+        Request request = buildRequest(headers, null)
                 .post(body)
-                .addHeader("cache-control", "no-cache")
                 .build();
 
         Response response = client.newCall(request).execute();
@@ -111,7 +163,6 @@ public class ChatApi {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("appkey", appkey);
-        jsonObject.put("timestamp", time);
         jsonObject.put("uid", uid);
         jsonObject.put("timestamp", time);
         jsonObject.put("geo[lat]", location.getLat());
@@ -126,6 +177,48 @@ public class ChatApi {
         }
 
         return null;
+    }
+
+    public GPSLocation getGPS(String uid, String salt) throws IOException {
+        return getGPS(uid, salt, null);
+    }
+
+    public GPSLocation getGPS(String uid, String salt, GPSLocation defaultLocation) throws IOException {
+        GPSLocation geoInfo = defaultLocation;
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String time = Long.toString(timestamp.getTime());
+
+        HashMap<String, String> request = new HashMap<>();
+        request.put("chatkey", uid);
+        request.put("timestamp", time);
+        request.put("secret", Md5.digest(time + salt));
+
+        JSONObject resJson = getForJSON(request, null);
+        if (resJson != null && resJson.has("geo")) {
+            JSONObject geo = resJson.getJSONObject("geo");
+            if (geo.has("lat")) {
+                if (geo.get("lat").getClass() == Double.class) {
+                    geoInfo = new GPSLocation(
+                            geo.getDouble("lat"),
+                            geo.getDouble("lng"));
+                } else if (geo.get("lat").getClass() == Integer.class) {
+                    geoInfo = new GPSLocation(
+                            geo.getInt("lat"),
+                            geo.getInt("lng"));
+                } else if (geo.get("lat").getClass() == String.class) {
+                    try {
+                        geoInfo = new GPSLocation(
+                                Double.valueOf(geo.getString("lat")),
+                                Double.valueOf(geo.getString("lng")));
+                    } catch (Exception e) {
+                        return geoInfo;
+                    }
+                }
+            }
+        }
+
+        return geoInfo;
     }
 
     public String engineChat(String action, Map<String, String> data) throws IOException {
