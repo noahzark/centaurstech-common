@@ -98,7 +98,6 @@ public class ChatApi {
                 .add("resulttype", queryResultType)
                 .build();
 
-        String resStr = postForString(body);
         JSONObject resJson = postForJSON(body);
         if (resJson != null) {
             return ticket;
