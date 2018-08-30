@@ -52,14 +52,26 @@ public class ChatApiTest {
 
     @Test
     public void testSendGPS() throws Exception {
-        EngineQuery engineQuery = new EngineQueryProxy("/api/chat/geo");
+        EngineQuery engineQuery = new EngineQueryProxy("POST /api/chat/geo");
 
-        GPSLocation location = new GPSLocation(1d, 2d);
+        GPSLocation location = new GPSLocation(1.2d, 2.1d);
 
         ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/geo");
 
         String msg = chatApi.sendGPS("qiwurobot", "123456", "common-lib-test", location);
         assertThat(msg, is("added"));
+
+        System.out.println(engineQuery.getQueryTimeString());
+    }
+
+    @Test
+    public void testGetGPS() throws Exception {
+        EngineQuery engineQuery = new EngineQueryProxy("GET /api/chat/geo");
+
+        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/geo");
+
+        GPSLocation location = chatApi.getGPS("common-lib-test", " XXXXXX");
+        assertThat(location, is(IsNull.notNullValue()));
 
         System.out.println(engineQuery.getQueryTimeString());
     }
