@@ -8,6 +8,11 @@ public class GPSLocation {
     Double lat;
     Double lng;
 
+    public GPSLocation(Integer lat, Integer lng) {
+        this.lat = lat.doubleValue();
+        this.lng = lng.doubleValue();
+    }
+
     public GPSLocation(Double lat, Double lng) {
         this.lat = lat;
         this.lng = lng;
