@@ -1,6 +1,6 @@
 package com.centaurstech.domain;
 
-import com.centaurstech.utils.TimeCalculator;
+import com.centaurstech.utils.time.TimeCalculator;
 
 import java.util.Map;
 
@@ -84,6 +84,28 @@ public abstract class EngineQuery {
             }
         }
         return "";
+    }
+
+    /**
+     * Get a integer value using a key from engine form
+     * @param requestParams
+     * @param key
+     * @return
+     */
+    public static Integer getIntegerValue(Map<String, String> requestParams, String key) {
+        return getIntegerValue(requestParams, key, -1);
+    }
+
+    public static Integer getIntegerValue(Map<String, String> requestParams, String key, Integer defaultValue) {
+        if (requestParams.containsKey(key)) {
+            return defaultValue;
+        }
+        String stringValue = requestParams.get(key);
+        try {
+            return Integer.valueOf(stringValue);
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 
 }
