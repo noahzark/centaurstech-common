@@ -3,6 +3,7 @@ package com.centaurstech.utils;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -20,6 +21,10 @@ public class QueryHelperTest {
         String queryString = QueryHelper.urlEncodeUTF8(query);
         System.out.println(queryString);
         assertThat(queryString, is("a=1&b=2&c=3"));
+
+        Map<String, String> decodedQuery =  QueryHelper.urlDecodeUTF8Map(queryString);
+        System.out.println(decodedQuery);
+        assertThat(decodedQuery.size(), is(3));
     }
 
 }
