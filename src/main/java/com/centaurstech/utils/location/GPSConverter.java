@@ -15,8 +15,8 @@ import com.centaurstech.domain.GPSLocation;
  */
 public class GPSConverter {
 
-    public static final String BAIDU_LBS_TYPE = "bd09ll";
-    public static double pi = 3.1415926535897932384626;
+    // public static double pi = 3.1415926535897932384626;
+    public static double pi = Math.PI;
     public static double a = 6378245.0;
     public static double ee = 0.00669342162296594323;
 
