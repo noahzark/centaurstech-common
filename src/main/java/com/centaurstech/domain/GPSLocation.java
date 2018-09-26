@@ -33,4 +33,9 @@ public class GPSLocation {
     public void setLng(Double lng) {
         this.lng = lng;
     }
+
+    public String toString() {
+        return lat + ","+ lng;
+    }
+
 }
