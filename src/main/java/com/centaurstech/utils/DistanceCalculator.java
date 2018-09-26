@@ -7,7 +7,7 @@ import com.centaurstech.domain.GPSLocation;
  */
 public class DistanceCalculator {
 
-    public static int EARTH_RADIUS_IN_KM = 6371;
+    public static int EARTH_RADIUS_IN_KM = 6378;
 
     private static double deg2rad(double deg){
         return deg*(Math.PI/180);
