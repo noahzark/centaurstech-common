@@ -38,4 +38,8 @@ public class GPSLocation {
         return lat + ","+ lng;
     }
 
+    public String toGaodeString() {
+        return lng + "," + lat;
+    }
+
 }
