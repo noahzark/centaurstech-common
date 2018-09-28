@@ -6,7 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -17,7 +17,7 @@ import static com.centaurstech.utils.QueryHelper.urlEncodeUTF8;
  */
 public class ChatApi {
 
-    private OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -26,6 +26,11 @@ public class ChatApi {
 
     public ChatApi(String server) {
         this.server = server;
+        client = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
     }
 
     private Request.Builder buildRequest(Map<String, String> headers, Map<String, String> queries) {
