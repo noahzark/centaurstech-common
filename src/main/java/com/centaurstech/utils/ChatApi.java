@@ -1,6 +1,7 @@
 package com.centaurstech.utils;
 
 import com.centaurstech.domain.GPSLocation;
+import com.centaurstech.utils.http.SimpleHttpClient;
 import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,102 +16,13 @@ import static com.centaurstech.utils.QueryHelper.urlEncodeUTF8;
 /**
  * Created by Feliciano on 7/3/2018.
  */
-public class ChatApi {
-
-    private OkHttpClient client;
+public class ChatApi extends SimpleHttpClient {
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
-    String server;
-
     public ChatApi(String server) {
-        this.server = server;
-        client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .build();
-    }
-
-    private Request.Builder buildRequest(Map<String, String> headers, Map<String, String> queries) {
-        String queryParameters = "";
-        if (queries != null && queries.size() > 0) {
-            queryParameters = "?" + queries.entrySet().stream()
-                    .map(p -> urlEncodeUTF8(p.getKey()) + "=" + urlEncodeUTF8(p.getValue()))
-                    .reduce((p1, p2) -> p1 + "&" + p2)
-                    .orElse("");
-        }
-
-        Request.Builder requestBuilder = new Request.Builder()
-                .url(server + queryParameters);
-
-        if (headers != null) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                requestBuilder.addHeader(entry.getKey(), entry.getValue());
-            }
-        }
-
-        return requestBuilder;
-    }
-
-    private String getForString(Map<String, String> headers, Map<String, String> queries) throws IOException {
-        Request request = buildRequest(headers, queries)
-                .get()
-                .build();
-
-        Response response = client.newCall(request).execute();
-        String res = response.body().string();
-        // System.out.println(res);
-
-        return res;
-    }
-
-    private JSONObject getForJSON(Map<String, String> headers, Map<String, String> queries) throws IOException {
-        String resStr = getForString(headers, queries);
-        try {
-            JSONObject resJson = new JSONObject(resStr);
-            if(resJson != null && resJson.has("retcode")){
-                if(0 == resJson.getInt("retcode")){
-                    return resJson;
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private String postForString(RequestBody body) throws IOException {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("cache-control", "no-cache");
-
-        Request request = buildRequest(headers, null)
-                .post(body)
-                .build();
-
-        Response response = client.newCall(request).execute();
-        String res = response.body().string();
-        // System.out.println(res);
-
-        return res;
-    }
-
-    private JSONObject postForJSON(RequestBody body) throws IOException {
-        String resStr = postForString(body);
-        try {
-            JSONObject resJson = new JSONObject(resStr);
-            if(resJson != null && resJson.has("retcode")){
-                if(0 == resJson.getInt("retcode")){
-                    return resJson;
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        super(server);
     }
 
     public JSONObject chat(String appkey, String appsecret,

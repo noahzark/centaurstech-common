@@ -92,4 +92,18 @@ public class ChatApiTest {
         System.out.println(engineQuery.getQueryTimeString());
     }
 
+    @Test
+    public void testSettingHeaders() throws Exception {
+        EngineQuery engineQuery = new EngineQueryProxy("/addHeaders");
+
+        ChatApi chatApi = new ChatApi("http://echo.chewrobot.com/anything");
+        chatApi.addCustomHeader("X-Forwarded-For", "121.35.103.1");
+        chatApi.addCustomHeader("Qw-Connecting-Ip", "121.35.103.1");
+
+        String result = chatApi.getForString(null, null);
+
+        System.out.println(result);
+        System.out.println(engineQuery.getQueryTimeString());
+    }
+
 }
