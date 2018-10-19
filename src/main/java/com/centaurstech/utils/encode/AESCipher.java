@@ -29,6 +29,18 @@ public class AESCipher {
     private static final String IV_STRING = "A-16-Byte-String";
     private static final String charset = "UTF-8";
 
+    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
     public static String aesEncryptString(String content, String key) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         byte[] contentBytes = content.getBytes(charset);
         byte[] keyBytes = key.getBytes(charset);

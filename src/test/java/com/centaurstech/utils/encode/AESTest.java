@@ -29,17 +29,38 @@ public class AESTest {
 
     @Test
     public void testAESCipher() throws Exception {
+        String key = "vTwa+2iRgvFMyH4WuYMx0A==";
+        String iv = "5a2wShLw7EWa8Fiw+cWYcQ==";
+
         String encryptResult = AESCipher.aesEncryptString(
                 "abcdefghijklmnopqRSTUVWXYZ1234567890!@#$%^&*()_+~",
-                "ZGRrMgGs/D9M8UbrOV+BMg==",
-                "0bdN6hsVC5vVPVNUmMnFRg=="
+                key,
+                iv
         );
         System.out.println(encryptResult);
 
         String decyryptResult = AESCipher.aesDecryptString(
-                "8jI+xr/TlLwzM0+vssSGm55ySTZX3nUTgZIkfS6XQjBL5UXQPa3WBEU6lq0Njm+QfJuXZvarq4/3MkO49gpRYQ==",
-                "ZGRrMgGs/D9M8UbrOV+BMg==",
-                "0bdN6hsVC5vVPVNUmMnFRg==");
+                encryptResult,
+                key,
+                iv
+        );
+        System.out.println(decyryptResult);
+    }
+
+    @Test
+    public void testAESCipherSimple() throws Exception {
+        String key = "1234567890123456";
+
+        String encryptResult = AESCipher.aesEncryptString(
+                "abcdefghijklmnopqRSTUVWXYZ1234567890!@#$%^&*()_+~",
+                key
+        );
+        System.out.println(encryptResult);
+
+        String decyryptResult = AESCipher.aesDecryptString(
+                encryptResult,
+                key
+        );
         System.out.println(decyryptResult);
     }
 
