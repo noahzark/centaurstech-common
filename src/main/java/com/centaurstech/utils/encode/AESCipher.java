@@ -26,20 +26,13 @@ import java.io.UnsupportedEncodingException;
 
 public class AESCipher {
 
+    public static final String ALGORITHM = "AES";
+
+    public static final String ALGORITHM_ECB_PADDING = "AES/ECB/PKCS5Padding";
+    public static final String ALGORITHM_CBC_PADDING = "AES/CBC/PKCS5Padding";
+
     private static final String IV_STRING = "A-16-Byte-String";
     private static final String charset = "UTF-8";
-
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
 
     public static String aesEncryptString(String content, String key) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         byte[] contentBytes = content.getBytes(charset);
@@ -89,12 +82,19 @@ public class AESCipher {
     }
 
     private static byte[] cipherOperation(byte[] contentBytes, byte[] keyBytes, int mode, byte[] ivBytes) throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, "AES");
+        SecretKeySpec secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
 
         IvParameterSpec ivParameterSpec = new IvParameterSpec(ivBytes);
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = Cipher.getInstance(ALGORITHM_CBC_PADDING);
         cipher.init(mode, secretKey, ivParameterSpec);
+
+        return cipher.doFinal(contentBytes);
+    }
+
+    public static byte[] cipherOperationECB(byte[] contentBytes, SecretKeySpec keySpec, String padding, int mode) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        Cipher cipher = Cipher.getInstance(padding);
+        cipher.init(mode, keySpec);
 
         return cipher.doFinal(contentBytes);
     }
