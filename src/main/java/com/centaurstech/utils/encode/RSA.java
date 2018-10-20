@@ -30,11 +30,13 @@ public class RSA {
     private static final int MAX_DECRYPT_BLOCK = 128;
 
     //Base64解码
+    @Deprecated
     public static byte[] decode(String str) {
         return Base64.getDecoder().decode(str);
     }
 
     //Base64编码
+    @Deprecated
     public static String encode(final byte[] bytes) {
         return new String(Base64.getEncoder().encode(bytes));
     }
@@ -54,7 +56,7 @@ public class RSA {
                     count = 0;
                 }
             }
-            byte[] buffer = decode(publicKeyStr);
+            byte[] buffer = Base64Util.decode(publicKeyStr);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(buffer);
             PublicKey publicKey = keyFactory.generatePublic(keySpec);
@@ -121,7 +123,7 @@ public class RSA {
             //System.out.println(content.getBytes());
             signature.update(content.getBytes());
 
-            boolean bverify = signature.verify(decode(sign));
+            boolean bverify = signature.verify(Base64Util.decode(sign));
             return bverify;
 
         } catch (Exception e) {
@@ -131,6 +133,14 @@ public class RSA {
     }
 
     //创建http查询字符串
+
+    /**
+     * Deprecated, use HttpUtil instead
+     * @param data
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    @Deprecated
     public static String buildHttpQuery(Map<String, String> data) throws UnsupportedEncodingException {
         String builder = new String();
         for (Entry<String, String> pair : data.entrySet()) {
@@ -140,6 +150,13 @@ public class RSA {
     }
 
     //解码http查询字符串
+    /**
+     * Deprecated, use HttpUtil instead
+     * @param httpQuery
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    @Deprecated
     public static Map<String, String> decodeHttpQuery(String httpQuery) throws UnsupportedEncodingException {
         Map<String, String> map = new TreeMap<>();
 
@@ -150,4 +167,5 @@ public class RSA {
 
         return map;
     }
+
 }
