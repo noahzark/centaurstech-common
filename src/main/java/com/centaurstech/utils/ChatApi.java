@@ -1,17 +1,20 @@
 package com.centaurstech.utils;
 
 import com.centaurstech.domain.GPSLocation;
+import com.centaurstech.utils.encode.Md5;
 import com.centaurstech.utils.http.SimpleHttpClient;
-import okhttp3.*;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.sql.Timestamp;
-import java.util.*;
-
-import static com.centaurstech.utils.QueryHelper.urlEncodeUTF8;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Feliciano on 7/3/2018.

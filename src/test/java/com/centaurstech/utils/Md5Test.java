@@ -1,6 +1,7 @@
 package com.centaurstech.utils;
 
 import org.junit.Test;
+import com.centaurstech.utils.encode.Md5;
 
 /**
  * Created by Feliciano on 7/3/2018.
