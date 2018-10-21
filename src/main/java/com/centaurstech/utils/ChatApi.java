@@ -1,5 +1,6 @@
 package com.centaurstech.utils;
 
+import com.centaurstech.domain.ChatApp;
 import com.centaurstech.domain.GPSLocation;
 import com.centaurstech.utils.encode.Md5;
 import com.centaurstech.utils.http.SimpleHttpClient;
@@ -26,6 +27,11 @@ public class ChatApi extends SimpleHttpClient {
 
     public ChatApi(String server) {
         super(server);
+    }
+
+    public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask) throws IOException {
+        return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
+                                uid, nickname, ask);
     }
 
     public JSONObject chat(String appkey, String appsecret,

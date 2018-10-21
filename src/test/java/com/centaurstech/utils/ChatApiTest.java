@@ -1,5 +1,6 @@
 package com.centaurstech.utils;
 
+import com.centaurstech.domain.ChatApp;
 import com.centaurstech.domain.EngineQuery;
 import com.centaurstech.domain.EngineQueryProxy;
 import com.centaurstech.domain.GPSLocation;
@@ -21,15 +22,16 @@ public class ChatApiTest {
     public void testChatApi() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/api/chat");
 
-        String appkey = "qiwurobot";
-        String appsecret = "123456";
+        ChatApp chatApp = new ChatApp("qiwurobot", "123456");
         String nickname = "common-lib-test";
 
         String uid = GetNetworkAddress.GetAddress("mac");
 
         ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat");
-        JSONObject result = chatApi.chat(appkey, appsecret, uid, nickname,
-                "HELLO");
+//        JSONObject result = chatApi.chat(appkey, appsecret, uid, nickname,
+//                "HELLO");
+        JSONObject result = chatApi.chat(chatApp, uid, nickname,"HELLO");
+
         assertThat(result.get("retcode"), is(0));
 
         System.out.println(engineQuery.getQueryTimeString());
