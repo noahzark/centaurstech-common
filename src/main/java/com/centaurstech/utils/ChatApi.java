@@ -83,6 +83,18 @@ public class ChatApi extends SimpleHttpClient {
         return null;
     }
 
+
+    public JSONObject getJson(String ticket, String serverSalt) throws IOException {
+        HashMap<String, String> request = new HashMap<>();
+        request.put("key", ticket);
+
+        JSONObject resJson = getForJSON(request, null);
+        if (resJson != null) {
+            return resJson;
+        }
+        return null;
+    }
+
     public String sendGPS(String appkey, String appsecret, String uid, GPSLocation location) throws IOException {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String time = Long.toString(timestamp.getTime());
