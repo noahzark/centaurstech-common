@@ -46,8 +46,23 @@ public class ChatApiTest {
         jsonObject.put("hello", "world");
 
         String SERVER_SALT = " QUERY_RESULT_SALT";
-        String ticket = chatApi.sendJson("test_result_type", jsonObject, SERVER_SALT);
+        String ticket = chatApi.sendJson("test_result_type", jsonObject, SERVER_SALT, 600);
         assertThat(ticket, is(IsNull.notNullValue()));
+        System.out.println(ticket);
+
+        System.out.println(engineQuery.getQueryTimeString());
+    }
+
+    @Test
+    public void testGetJson() throws Exception {
+        EngineQuery engineQuery = new EngineQueryProxy("/api/chat/data");
+
+        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/data");
+        String SERVER_SALT = " QUERY_RESULT_SALT";
+        String ticket = "e5cf5e19-5495-491e-b69f-6c53cfc216bc";
+        JSONObject result = chatApi.getJson(ticket, SERVER_SALT);
+        assertThat(result, is(IsNull.notNullValue()));
+        System.out.println(result.toString());
 
         System.out.println(engineQuery.getQueryTimeString());
     }
