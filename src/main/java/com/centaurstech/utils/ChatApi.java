@@ -62,6 +62,10 @@ public class ChatApi extends SimpleHttpClient {
     }
 
     public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt) throws IOException {
+        return sendJson(queryResultType, jsonObject, serverSalt, 60);
+    }
+
+    public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt, Integer lifespan) throws IOException {
         String ticket = UUID.randomUUID().toString();
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -71,6 +75,7 @@ public class ChatApi extends SimpleHttpClient {
         FormBody body = new FormBody.Builder()
                 .add("data", jsonObject.toString())
                 .add("key", ticket)
+                .add("lifespan", lifespan.toString())
                 .add("timestamp", time)
                 .add("secret", Md5.digest(time + serverSalt))
                 .add("resulttype", queryResultType)
