@@ -33,7 +33,11 @@ public class HttpUtil {
 
         for (String s : httpQuery.split("&")) {
             String pair[] = s.split("=");
-            map.put(URLDecoder.decode(pair[0], "utf-8"), URLDecoder.decode(pair[1], "utf-8"));
+            String value = "";
+            if (pair.length == 2) {
+                value = URLDecoder.decode(pair[1], "utf-8");
+            }
+            map.put(URLDecoder.decode(pair[0], "utf-8"), value);
         }
 
         return map;
