@@ -29,6 +29,10 @@ public class ChatApi extends SimpleHttpClient {
         super(server);
     }
 
+    public ChatApi(String server, long readTimeout) {
+        super(server, readTimeout);
+    }
+
     public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask) throws IOException {
         return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
                                 uid, nickname, ask);

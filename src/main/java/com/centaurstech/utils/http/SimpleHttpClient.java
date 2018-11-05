@@ -23,13 +23,17 @@ public class SimpleHttpClient {
     private Map<String, String> customHeaders
             = new HashMap<>();
 
-    public SimpleHttpClient(String server) {
+    public SimpleHttpClient(String server, long readTimeout) {
         this.server = server;
         client = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .writeTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(readTimeout, TimeUnit.SECONDS)
                 .build();
+    }
+
+    public SimpleHttpClient(String server) {
+        this(server, 30);
     }
 
     Request.Builder buildRequest(Map<String, String> headers, Map<String, String> queries) {
