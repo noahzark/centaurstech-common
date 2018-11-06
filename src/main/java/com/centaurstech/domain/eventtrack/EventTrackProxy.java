@@ -42,7 +42,8 @@ public class EventTrackProxy {
                 return "permission missing";
             }
         }
-        fields.put(EventTrackItem.FieldKey.PERMISSION.value, permissionType.toString());
+        if (permissionType != null)
+            fields.put(EventTrackItem.FieldKey.PERMISSION.value, permissionType.toString());
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.USER_BEHAVIOR, fields);
         eventTrack.setOrigin(origin);
         this.submitTask(eventTrack);
