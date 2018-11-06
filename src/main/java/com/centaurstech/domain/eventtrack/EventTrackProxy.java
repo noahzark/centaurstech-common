@@ -15,15 +15,23 @@ import java.util.concurrent.Executors;
  */
 public class EventTrackProxy {
 
-    private static final int MAX_SIZE_STORAGE = 50;
-    String origin;
+    private static final int DEFAULT_SIZE_STORAGE = 50;
+
     EventTrackSender eventTrackSender;
-    private HashSet<EventTrack> eventTrackSet = new HashSet<>(MAX_SIZE_STORAGE * 2);
+    String origin;
+    int reportSize;
+
+    private HashSet<EventTrack> eventTrackSet = new HashSet<>(DEFAULT_SIZE_STORAGE);
     private ExecutorService cachePool = Executors.newCachedThreadPool();
 
     public EventTrackProxy(EventTrackSender eventTrackSender, String origin) {
+        this(eventTrackSender, origin, DEFAULT_SIZE_STORAGE);
+    }
+
+    public EventTrackProxy(EventTrackSender eventTrackSender, String origin, int reportSize) {
         this.eventTrackSender = eventTrackSender;
         this.origin = origin;
+        this.reportSize = reportSize;
     }
 
     public String addUserBehaviorEvent(String uid, EventTrackItem.ActionType actionType, EventTrackItem.PermissionType permissionType) {
@@ -112,7 +120,7 @@ public class EventTrackProxy {
 
     private synchronized void checkTrackSet(EventTrack eventTrack) {
         eventTrackSet.add(eventTrack);
-        if (eventTrackSet.size() >= MAX_SIZE_STORAGE) {
+        if (eventTrackSet.size() >= reportSize) {
             eventTrackSender.sendEventsToServer(eventTrackSet);
             eventTrackSet.clear();
         }
