@@ -6,31 +6,46 @@ import java.util.Map;
 
 public class TimeBasedCache<Content> {
 
+    public static final long DEFAULT_EXPIRE_IN = 600 * 1000L;
+
     Long expireIn;
 
     Map<String, Content> container;
 
-    Map<String, Long> lastUpdate;
+    Map<String, Long> expireWhen;
 
     public TimeBasedCache(Long expireIn) {
         this.expireIn = expireIn;
         container = new HashMap<>();
-        lastUpdate = new HashMap<>();
+        expireWhen = new HashMap<>();
+    }
+
+    public TimeBasedCache() {
+        this(DEFAULT_EXPIRE_IN);
     }
 
     public void put(String key, Content content) {
+        this.put(key, content, expireIn);
+    }
+
+    public void put(String key, Content content, Long expireIn) {
         container.put(key, content);
-        lastUpdate.put(key, Calendar.getInstance().getTimeInMillis());
+        expireWhen.put(key, Calendar.getInstance().getTimeInMillis() + expireIn);
     }
 
     public Content get(String key) {
-        if (lastUpdate.containsKey(key)) {
-            if (Calendar.getInstance().getTimeInMillis() < lastUpdate.get(key) + expireIn) {
+        if (expireWhen.containsKey(key)) {
+            if (Calendar.getInstance().getTimeInMillis() < expireWhen.get(key)) {
                 return container.get(key);
             }
-            lastUpdate.remove(key);
+            container.remove(key);
+            expireWhen.remove(key);
         }
         return null;
+    }
+
+    public boolean contains(String key) {
+        return get(key) == null;
     }
 
 }
