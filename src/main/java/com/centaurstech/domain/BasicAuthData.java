@@ -32,4 +32,8 @@ public class BasicAuthData {
         return password;
     }
 
+    public String toString() {
+        return getUsername() + " " + getPassword();
+    }
+
 }
