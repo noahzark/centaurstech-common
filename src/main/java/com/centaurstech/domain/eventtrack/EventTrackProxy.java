@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Event track proxy
@@ -15,13 +16,18 @@ import java.util.concurrent.Executors;
  */
 public class EventTrackProxy {
 
+    public enum BuffMode { HASH_SET, LINKED_BLOCKING_QUEUE}
+
     private static final int DEFAULT_SIZE_STORAGE = 50;
 
     EventTrackSender eventTrackSender;
     String origin;
     int reportSize;
 
+    BuffMode buffMode;
+
     private HashSet<EventTrack> eventTrackSet = new HashSet<>(DEFAULT_SIZE_STORAGE);
+    private LinkedBlockingQueue<EventTrack> eventTrackQueue = new LinkedBlockingQueue<>(DEFAULT_SIZE_STORAGE);
     private ExecutorService cachePool = Executors.newCachedThreadPool();
 
     public EventTrackProxy(EventTrackSender eventTrackSender, String origin) {
@@ -32,6 +38,8 @@ public class EventTrackProxy {
         this.eventTrackSender = eventTrackSender;
         this.origin = origin;
         this.reportSize = reportSize;
+
+        this.buffMode = BuffMode.HASH_SET;
     }
 
     public String addUserBehaviorEvent(String uid, EventTrackItem.ActionType actionType, EventTrackItem.PermissionType permissionType) {
@@ -115,20 +123,43 @@ public class EventTrackProxy {
     }
 
     private void submitTask(EventTrack eventTrack) {
-        Runnable runnable = () -> checkTrackSet(eventTrack);
-        cachePool.execute(runnable);
+        if (buffMode == BuffMode.LINKED_BLOCKING_QUEUE) {
+            checkTrackQueue(reportSize);
+            eventTrackQueue.add(eventTrack);
+        } else {
+            HashSet<EventTrack> eventTrackSet = checkTrackSet(reportSize);
+            eventTrackSet.add(eventTrack);}
     }
 
-    private synchronized void checkTrackSet(EventTrack eventTrack) {
-        eventTrackSet.add(eventTrack);
-        if (eventTrackSet.size() >= reportSize) {
-            eventTrackSender.sendEventsToServer(eventTrackSet);
-            eventTrackSet.clear();
+    public void checkTrackQueue(int needReportSize) {
+        if (eventTrackQueue.size() > needReportSize) {
+            HashSet<EventTrack> eventSendSet = new HashSet<>(needReportSize * 2);
+            while(eventTrackQueue.size() > needReportSize / 2 && eventSendSet.size() < needReportSize * 2 ) {
+                eventSendSet.add(eventTrackQueue.poll());
+            }
+            Runnable runnable = () -> eventTrackSender.sendEventsToServer(eventSendSet);
+            cachePool.execute(runnable);
         }
+    }
+
+    private synchronized HashSet<EventTrack> checkTrackSet(int needReportSize) {
+        if (eventTrackSet.size() >= needReportSize) {
+            Runnable runnable = () -> eventTrackSender.sendEventsToServer(eventTrackSet);
+            cachePool.execute(runnable);
+            eventTrackSet = new HashSet<>(DEFAULT_SIZE_STORAGE);
+        }
+        return eventTrackSet;
     }
 
     public interface EventTrackSender {
         void sendEventsToServer(Set<EventTrack> eventTracks);
     }
 
+    public BuffMode getBuffMode() {
+        return buffMode;
+    }
+
+    public void setBuffMode(BuffMode buffMode) {
+        this.buffMode = buffMode;
+    }
 }
