@@ -25,11 +25,6 @@ public class EventTrackTest {
             int times = 0;
             while (++times <= 1000) {
                 eventSendSet.addBotActivationEvent("10086", SMART_LIFE_APP, UNKNOWN);
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
             return null;
         });
@@ -66,11 +61,6 @@ public class EventTrackTest {
             int times = 0;
             while (++times <= 1000) {
                 eventSendSet.addBotActivationEvent("10086", SMART_LIFE_APP, UNKNOWN);
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
             return true;
         });

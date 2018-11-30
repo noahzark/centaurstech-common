@@ -13,7 +13,11 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class EventTrackProxy {
 
-    public enum BuffMode { HASH_SET, LINKED_BLOCKING_QUEUE}
+    public enum BuffMode {
+        @Deprecated
+        HASH_SET,
+        LINKED_BLOCKING_QUEUE
+    }
 
     public static final int DEFAULT_STORAGE_SIZE = 10000;
 
