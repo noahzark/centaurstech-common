@@ -1,9 +1,6 @@
 package com.centaurstech.domain.eventtrack;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,7 +15,7 @@ public class EventTrackProxy {
 
     public enum BuffMode { HASH_SET, LINKED_BLOCKING_QUEUE}
 
-    private static final int DEFAULT_SIZE_STORAGE = 50;
+    public static final int DEFAULT_STORAGE_SIZE = 10000;
 
     EventTrackSender eventTrackSender;
     String origin;
@@ -26,20 +23,31 @@ public class EventTrackProxy {
 
     BuffMode buffMode;
 
-    private HashSet<EventTrack> eventTrackSet = new HashSet<>(DEFAULT_SIZE_STORAGE);
-    private LinkedBlockingQueue<EventTrack> eventTrackQueue = new LinkedBlockingQueue<>(DEFAULT_SIZE_STORAGE);
+    Date lastFlush;
+
+    private HashSet<EventTrack> eventTrackSet;
+    private LinkedBlockingQueue<EventTrack> eventTrackQueue;
     private ExecutorService cachePool = Executors.newCachedThreadPool();
 
     public EventTrackProxy(EventTrackSender eventTrackSender, String origin) {
-        this(eventTrackSender, origin, DEFAULT_SIZE_STORAGE);
+        this(eventTrackSender, origin, DEFAULT_STORAGE_SIZE);
     }
 
     public EventTrackProxy(EventTrackSender eventTrackSender, String origin, int reportSize) {
+        this(eventTrackSender, origin, reportSize, BuffMode.LINKED_BLOCKING_QUEUE);
+    }
+
+    public EventTrackProxy(EventTrackSender eventTrackSender, String origin, int reportSize, BuffMode buffMode) {
         this.eventTrackSender = eventTrackSender;
         this.origin = origin;
         this.reportSize = reportSize;
 
-        this.buffMode = BuffMode.HASH_SET;
+        this.buffMode = buffMode;
+        if (buffMode == BuffMode.HASH_SET) {
+            eventTrackSet = new HashSet<>(DEFAULT_STORAGE_SIZE);
+        } else {
+            eventTrackQueue = new LinkedBlockingQueue<>(DEFAULT_STORAGE_SIZE);
+        }
     }
 
     public String addUserBehaviorEvent(String uid, EventTrackItem.ActionType actionType, EventTrackItem.PermissionType permissionType) {
@@ -127,26 +135,40 @@ public class EventTrackProxy {
             checkTrackQueue(reportSize);
             eventTrackQueue.add(eventTrack);
         } else {
-            HashSet<EventTrack> eventTrackSet = checkTrackSet(reportSize);
-            eventTrackSet.add(eventTrack);}
+            synchronized (eventTrackSet) {
+                checkTrackSet(reportSize);
+                eventTrackSet.add(eventTrack);
+            }
+        }
     }
 
-    public void checkTrackQueue(int needReportSize) {
+    public void forceFlush(int needReportSize) {
+        if (buffMode == BuffMode.LINKED_BLOCKING_QUEUE) {
+            checkTrackQueue(needReportSize);
+        } else {
+            checkTrackSet(needReportSize);
+        }
+    }
+
+    private void checkTrackQueue(int needReportSize) {
         if (eventTrackQueue.size() > needReportSize) {
             HashSet<EventTrack> eventSendSet = new HashSet<>(needReportSize * 2);
-            while(eventTrackQueue.size() > needReportSize / 2 && eventSendSet.size() < needReportSize * 2 ) {
+            while(eventTrackQueue.size() > needReportSize / 2) {
                 eventSendSet.add(eventTrackQueue.poll());
             }
             Runnable runnable = () -> eventTrackSender.sendEventsToServer(eventSendSet);
             cachePool.execute(runnable);
+            lastFlush = Calendar.getInstance().getTime();
         }
     }
 
-    private synchronized HashSet<EventTrack> checkTrackSet(int needReportSize) {
+    private HashSet<EventTrack> checkTrackSet(int needReportSize) {
         if (eventTrackSet.size() >= needReportSize) {
-            Runnable runnable = () -> eventTrackSender.sendEventsToServer(eventTrackSet);
+            HashSet<EventTrack> temp = new HashSet<>(eventTrackSet);
+            Runnable runnable = () -> eventTrackSender.sendEventsToServer(temp);
             cachePool.execute(runnable);
-            eventTrackSet = new HashSet<>(DEFAULT_SIZE_STORAGE);
+            eventTrackSet.clear();
+            lastFlush = Calendar.getInstance().getTime();
         }
         return eventTrackSet;
     }
@@ -159,7 +181,8 @@ public class EventTrackProxy {
         return buffMode;
     }
 
-    public void setBuffMode(BuffMode buffMode) {
-        this.buffMode = buffMode;
+    public Date getLastFlush() {
+        return lastFlush;
     }
+
 }
