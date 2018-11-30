@@ -8,8 +8,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Event track proxy
  *
- * @author Tongcheng.Tang
- * updated by Fangzhou.Long
+ * @author initial Tongcheng.Tang
+ * @author updated by Fangzhou.Long
+ * LINKED_BLOCKING_QUEUE BuffMode advised by Dongke.Zhou
  */
 public class EventTrackProxy {
 
