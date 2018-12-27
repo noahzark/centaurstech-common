@@ -141,7 +141,11 @@ public class EventTrackItem {
         NAVIGATION_QUERY_SITE("导航查询地点"),
         NAVIGATION_START("开始导航"),
         NAVIGATION_END("结束导航"),
-        NAVIGATION_SWITCH("导航切换");
+        NAVIGATION_SWITCH("导航切换"),
+        ALL_TAXIS_CHANGE_CAR_TYPE("打车更换车型"),
+        ALL_TAXIS_CHANGE_CAR_PRICE("打车更换价格"),
+        ALL_TAXIS_CHANGE_CAR_PLATFORM("打车更换车平台"),
+        ALL_TAXIS_FAST_CAR("更快接驾");
         private String description;
 
         Field(String description) {
