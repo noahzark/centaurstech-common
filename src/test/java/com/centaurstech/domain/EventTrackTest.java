@@ -23,7 +23,7 @@ public class EventTrackTest {
     public FutureTask<Void> buildFutureTask(EventTrackServiceHashSet eventSendSet) {
         return new FutureTask(() -> {
             int times = 0;
-            while (++times <= 1000) {
+            while (++times <= 10000) {
                 eventSendSet.addBotActivationEvent("10086", SMART_LIFE_APP, UNKNOWN);
             }
             return null;
@@ -41,7 +41,7 @@ public class EventTrackTest {
 
         ArrayList<FutureTask<Void>> tasks = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             FutureTask<Void> futureTask = buildFutureTask(eventSendSet);
             tasks.add(futureTask);
             tpe.submit(futureTask);
@@ -59,7 +59,7 @@ public class EventTrackTest {
     public FutureTask<Boolean> buildFutureTask(EventTrackServiceBlockingQueue eventSendSet) {
         return new FutureTask(() -> {
             int times = 0;
-            while (++times <= 1000) {
+            while (++times <= 10000) {
                 eventSendSet.addBotActivationEvent("10086", SMART_LIFE_APP, UNKNOWN);
             }
             return true;
@@ -77,7 +77,7 @@ public class EventTrackTest {
 
         ArrayList<FutureTask<Boolean>> tasks = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             FutureTask<Boolean> futureTask = buildFutureTask(eventSendSet);
             tasks.add(futureTask);
             tpe.submit(futureTask);
