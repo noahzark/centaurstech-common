@@ -58,7 +58,10 @@ public class EventTrackItem {
         this.fields.put(key, value);
     }
 
-    public enum ReportType {
+    /**
+     * Restricted, tell Hengry before you change this part.
+     */
+    public enum ReportType{
         USER_BEHAVIOR("上报⽤户⾏为数据"),
         BOT_ACTIVATION("上报BOT唤醒数据"),
         BOT_EXCEPTION("上报BOT异常数据"),
@@ -68,9 +71,10 @@ public class EventTrackItem {
         ReportType(String description) {
             this.description = description;
         }
+
     }
 
-    public enum Platform {
+    public enum Platform implements Describable {
         SMART_LIFE_APP("智慧生活App"),
         XIAO_MI("小爱音箱");
         private String description;
@@ -78,12 +82,18 @@ public class EventTrackItem {
         Platform(String description) {
             this.description = description;
         }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
     }
 
-    public enum ActionType {
+    public enum ActionType implements Describable {
         INSTALL("⽤户安装\"你好⼩悟\""),
         STARTUP("用户启动\"你好小悟\""),
-        REGISTER("用户注册"), LOGIN("用户登录"),
+        REGISTER("用户注册"),
+        LOGIN("用户登录"),
         UPVOTE("点赞"),
         DOWNVOTE("点踩"),
         IMPOWER("用户授权");
@@ -92,9 +102,14 @@ public class EventTrackItem {
         ActionType(String description) {
             this.description = description;
         }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
     }
 
-    public enum PermissionType {
+    public enum PermissionType implements Describable {
         LOCATION("位置权限"),
         MICROPHONE("⻨克⻛权限"),
         CONTACTS("通讯录权限"),
@@ -106,9 +121,14 @@ public class EventTrackItem {
         PermissionType(String description) {
             this.description = description;
         }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
     }
 
-    public enum Field {
+    private enum Field implements Describable {
         NAVIGATION_ARRIVED("导航到达⽬的地"),
         USE_NAVIGATION_FOR_BIKING("使⽤导航骑⾏"),
         USE_NAVIGATION_FOR_DRIVING("使⽤导航驾驶"),
@@ -151,9 +171,14 @@ public class EventTrackItem {
         Field(String description) {
             this.description = description;
         }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
     }
 
-    public enum BotName {
+    public enum BotName implements Describable {
         TRAIN("火车"),
         FLIGHT("机票"),
         HOTEL("酒店"),
@@ -167,8 +192,16 @@ public class EventTrackItem {
         BotName(String description) {
             this.description = description;
         }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
     }
 
+    /**
+     * Restricted, tell Hengry before you change this part.
+     */
     public enum FieldKey {
         ACTION("action"),
         PERMISSION("permission"),
@@ -186,4 +219,9 @@ public class EventTrackItem {
     public interface BotException {
         String getExceptionDescription();
     }
+
+    public interface Describable {
+        String getDescription();
+    }
+
 }
