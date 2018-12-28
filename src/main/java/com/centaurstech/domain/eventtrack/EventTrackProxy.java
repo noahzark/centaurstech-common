@@ -119,11 +119,11 @@ public class EventTrackProxy {
 
     private EventTrack generateEventTrack(
             String uid,
-            EventTrackItem.Describable reportType,
+            EventTrackItem.ReportType reportType,
             Map<String, String> fields) {
         EventTrack eventTrack = new EventTrack();
         eventTrack.setUid(uid);
-        EventTrackItem eventTrackItem = new EventTrackItem(reportType.getDescription());
+        EventTrackItem eventTrackItem = new EventTrackItem(reportType.toString());
         eventTrackItem.setFields(fields);
         eventTrack.addDataItem(eventTrackItem);
         return eventTrack;

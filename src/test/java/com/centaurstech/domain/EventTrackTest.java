@@ -20,6 +20,7 @@ public class EventTrackTest {
 
     static ConcurrentHashMap<EventTrack, Boolean> reports = new ConcurrentHashMap<>();
 
+    @Deprecated
     public FutureTask<Void> buildFutureTask(EventTrackServiceHashSet eventSendSet) {
         return new FutureTask(() -> {
             int times = 0;
@@ -92,6 +93,7 @@ public class EventTrackTest {
         reports.clear();
     }
 
+    @Deprecated
     class EventTrackServiceHashSet extends EventTrackProxy {
         public EventTrackServiceHashSet() {
             super((eventTracks) -> {
