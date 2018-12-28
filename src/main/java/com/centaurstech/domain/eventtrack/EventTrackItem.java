@@ -128,7 +128,7 @@ public class EventTrackItem {
         }
     }
 
-    private enum Field implements Describable {
+    public enum Field implements Describable {
         NAVIGATION_ARRIVED("导航到达⽬的地"),
         USE_NAVIGATION_FOR_BIKING("使⽤导航骑⾏"),
         USE_NAVIGATION_FOR_DRIVING("使⽤导航驾驶"),
