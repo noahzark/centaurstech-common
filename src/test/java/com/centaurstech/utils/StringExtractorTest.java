@@ -15,6 +15,8 @@ public class StringExtractorTest {
         assertThat(basicAuthContent.getUsername(), is("test"));
         assertThat(basicAuthContent.getPassword(), is("123456"));
 
+        assertThat(basicAuthContent.toString().equals(BasicAuthData.fromAuth("test", "123456").toString()), is(true));
+
         basicAuthContent = BasicAuthData.fromString("Basic dGVzdDo=");
         assertThat(basicAuthContent.getUsername(), is("test"));
         assertThat(basicAuthContent.getPassword(), is(""));
