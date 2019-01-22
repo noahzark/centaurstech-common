@@ -57,7 +57,7 @@ public class EventTrackProxy {
 
     public String addUserBehaviorEvent(String uid, EventTrackItem.Describable actionType, EventTrackItem.Describable permissionType) {
         Map<String, String> fields = new HashMap<>();
-        fields.put(EventTrackItem.FieldKey.ACTION.value, actionType.getDescription());
+        fields.put(EventTrackItem.FieldKey.ACTION.value, actionType.toString());
         if (actionType == EventTrackItem.ActionType.IMPOWER) {
             if (permissionType == null) {
                 return "permission missing";
@@ -103,15 +103,15 @@ public class EventTrackProxy {
                                      EventTrackItem.Describable botName,
                                      Integer chat) {
         Map<String, String> fields = new HashMap<>();
-        fields.put(EventTrackItem.FieldKey.FIELD.value, field.getDescription());
+        fields.put(EventTrackItem.FieldKey.FIELD.value, field.toString());
         if (botName != null) {
-            fields.put(EventTrackItem.FieldKey.BOT.value, botName.getDescription());
+            fields.put(EventTrackItem.FieldKey.BOT.value, botName.toString());
         }
         if (chat != null) {
             fields.put(EventTrackItem.FieldKey.CHAT.value, chat.toString());
         }
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.BOT_SESSION, fields);
-        eventTrack.setPlatform(platform == null ? null : platform.getDescription());
+        eventTrack.setPlatform(platform == null ? null : platform.toString());
         eventTrack.setOrigin(origin);
         this.submitTask(eventTrack);
         return "SUCCESS";
