@@ -13,11 +13,21 @@ public class DistanceCalculator {
         return deg*(Math.PI/180);
     }
 
+    @Deprecated
     public static double distanceBetween(GPSLocation source, GPSLocation target) {
-        return distanceBetween(source.getLat(), source.getLng(), target.getLat(), target.getLng());
+        return distanceBetween(source.getLat(), source.getLng(), target.getLat(), target.getLng(), EARTH_RADIUS_IN_KM);
     }
 
+    public static double distanceBetweenInKM(GPSLocation source, GPSLocation target) {
+        return distanceBetween(source.getLat(), source.getLng(), target.getLat(), target.getLng(), EARTH_RADIUS_IN_KM);
+    }
+
+    @Deprecated
     public static double distanceBetween(double sourceLat, double sourceLng, double targetLat, double targetLng) {
+        return distanceBetween(sourceLat, sourceLng, targetLat, targetLng, EARTH_RADIUS_IN_KM);
+    }
+
+    public static double distanceBetweenInKM(double sourceLat, double sourceLng, double targetLat, double targetLng) {
         return distanceBetween(sourceLat, sourceLng, targetLat, targetLng, EARTH_RADIUS_IN_KM);
     }
 
