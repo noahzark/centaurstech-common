@@ -8,6 +8,7 @@ import org.hamcrest.core.IsNull;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import java.io.*;
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -20,21 +21,30 @@ public class ChatApiTest {
 
     @Test
     public void testChatApi() throws Exception {
-        EngineQuery engineQuery = new EngineQueryProxy("/api/chat");
-
-        ChatApp chatApp = new ChatApp("qiwurobot", "123456");
-        String nickname = "common-lib-test";
-
         String uid = GetNetworkAddress.GetAddress("mac");
-
-        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat");
-//        JSONObject result = chatApi.chat(appkey, appsecret, uid, nickname,
-//                "HELLO");
-        JSONObject result = chatApi.chat(chatApp, uid, nickname,"HELLO");
+        JSONObject result = this.testChatApi(uid, "HELLO");
 
         assertThat(result.get("retcode"), is(0));
+    }
+
+    static JSONObject testChatApi(String uid, String ask) throws Exception {
+        EngineQuery engineQuery = new EngineQueryProxy("/api/chat");
+
+        String appkey = "qiwurobot";
+        String appsecret = "123456";
+        String nickname = "common-lib-test";
+        ChatApp chatApp = new ChatApp(appkey, appsecret);
+
+        ChatApi chatApi = new ChatApi("http://localhost:18001/api/chat");
+
+        /* Chat without chatApp
+        JSONObject result = chatApi.chat(appkey, appsecret, uid, nickname,
+                "HELLO");
+        */
+        JSONObject result = chatApi.chat(chatApp, uid, nickname,ask);
 
         System.out.println(engineQuery.getQueryTimeString());
+        return result;
     }
 
     @Test
@@ -97,7 +107,7 @@ public class ChatApiTest {
     public void testEngineLogin() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/goingchatcn");
 
-        ChatApi chatApi = new ChatApi("http://qcloud-sh1.chewrobot.com/goingchatcn/chatbotserver.php");
+        ChatApi chatApi = new ChatApi("http://aliyun-hz2.chewrobot.com/goingchatcn/chatbotserver.php");
         HashMap<String, String> loginRequest = new HashMap<>();
         loginRequest.put("aipioneer_username", "mimi2");
         loginRequest.put("nickname", "landey");
@@ -121,6 +131,28 @@ public class ChatApiTest {
 
         System.out.println(result);
         System.out.println(engineQuery.getQueryTimeString());
+    }
+
+}
+
+class ChatApiTerminal {
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        String uid = GetNetworkAddress.GetAddress("mac");
+
+        System.out.println("Loading...");
+        System.out.println(ChatApiTest.testChatApi(uid, "HELLO").get("msg"));
+
+        String line;
+        while(!(line = bufferedReader.readLine()).equals("exit")) {
+            JSONObject result = ChatApiTest.testChatApi(uid, line);
+            System.out.println(result.get("msg"));
+            result.remove("msg");
+            System.out.println(result);
+        }
+
+        System.out.println("Bye");
     }
 
 }
