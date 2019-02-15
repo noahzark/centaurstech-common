@@ -165,10 +165,7 @@ public class EventTrackItem {
         ALL_TAXIS_CHANGE_CAR_TYPE("打车更换车型"),
         ALL_TAXIS_CHANGE_CAR_PRICE("打车更换价格"),
         ALL_TAXIS_CHANGE_CAR_PLATFORM("打车更换车平台"),
-        ALL_TAXIS_FAST_CAR("更快接驾"),
-        ALL_TAXIS_CANCEL_CAR("取消叫车"),
-        ALL_TAXIS_CANCEL_CAR_USER("用户中断叫车"),
-        ALL_TAXIS_CANCEL_CAR_DRIVER("司机中断叫车");
+        ALL_TAXIS_FAST_CAR("更快接驾");
         private String description;
 
         Field(String description) {
