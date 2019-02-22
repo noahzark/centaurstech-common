@@ -25,6 +25,10 @@ public class QueryHelperTest {
         Map<String, String> decodedQuery =  QueryHelper.urlDecodeUTF8Map(queryString);
         System.out.println(decodedQuery);
         assertThat(decodedQuery.size(), is(3));
+
+        decodedQuery =  QueryHelper.urlDecodeUTF8Map("a=1&b=2&c=3&d=&e");
+        System.out.println(decodedQuery);
+        assertThat(decodedQuery.size(), is(5));
     }
 
 }

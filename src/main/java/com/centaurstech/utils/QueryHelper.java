@@ -1,5 +1,7 @@
 package com.centaurstech.utils;
 
+import com.centaurstech.utils.encode.HttpUtil;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -42,12 +44,14 @@ public class QueryHelper {
         Map<String, String> map = new TreeMap<>();
 
         for (String s : httpQuery.split("&")) {
-            String pair[] = s.split("=");
-            if(s.length == 2){
-                map.put(
-                        urlDecodeUTF8(pair[0]),
-                        urlDecodeUTF8(pair[1]));
-            }
+            try {
+                String pair[] = s.split("=");
+                String value = "";
+                if (pair.length == 2) {
+                    value = URLDecoder.decode(pair[1], "utf-8");
+                }
+                map.put(URLDecoder.decode(pair[0], "utf-8"), value);
+            } catch (UnsupportedEncodingException e) { }
         }
 
         return map;

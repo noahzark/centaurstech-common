@@ -8,7 +8,7 @@ public class HttpUtilTest {
 
     @Test
     public void testDecodeHttpQuery() throws Exception {
-        System.out.println(HttpUtil.decodeHttpQuery("size=10&stateType=100&lastId=&page=8"));
+        System.out.println(HttpUtil.decodeHttpQuery("size=10&stateType=100&lastId=&page=8&test1&test2=&aaa=123"));
     }
 
     @Test
