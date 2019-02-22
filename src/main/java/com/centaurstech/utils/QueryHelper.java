@@ -43,9 +43,11 @@ public class QueryHelper {
 
         for (String s : httpQuery.split("&")) {
             String pair[] = s.split("=");
-            map.put(
-                    urlDecodeUTF8(pair[0]),
-                    urlDecodeUTF8(pair[1]));
+            if(s.length == 2){
+                map.put(
+                        urlDecodeUTF8(pair[0]),
+                        urlDecodeUTF8(pair[1]));
+            }
         }
 
         return map;
