@@ -209,7 +209,7 @@ public class EventTrackItem {
         EXCEPTION("exception"),
         FIELD("field"),
         CHAT("chat"),
-        AMOUNT("amount");
+        NUMERIC("numeric");
         public String value;
 
         FieldKey(String value) {

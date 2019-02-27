@@ -132,7 +132,7 @@ public class EventTrackProxy {
             fields.put(EventTrackItem.FieldKey.CHAT.value, chat.toString());
         }
         if (amount != null) {
-            fields.put(EventTrackItem.FieldKey.AMOUNT.value, amount);
+            fields.put(EventTrackItem.FieldKey.NUMERIC.value, amount);
         }
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.BOT_SESSION, fields);
         eventTrack.setPlatform(platform == null ? null : platform.toString());
