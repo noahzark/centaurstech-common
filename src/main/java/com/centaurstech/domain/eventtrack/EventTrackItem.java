@@ -208,8 +208,7 @@ public class EventTrackItem {
         BOT("bot"),
         EXCEPTION("exception"),
         FIELD("field"),
-        CHAT("chat"),
-        AMOUNT("amount");
+        CHAT("chat");
         public String value;
 
         FieldKey(String value) {
