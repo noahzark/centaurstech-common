@@ -117,6 +117,30 @@ public class EventTrackProxy {
         return "SUCCESS";
     }
 
+    public String addBotSessionEvent(String uid,
+                                     EventTrackItem.Describable platform,
+                                     EventTrackItem.Describable field,
+                                     EventTrackItem.Describable botName,
+                                     Integer chat,
+                                     String amount) {
+        Map<String, String> fields = new HashMap<>();
+        fields.put(EventTrackItem.FieldKey.FIELD.value, field.toString());
+        if (botName != null) {
+            fields.put(EventTrackItem.FieldKey.BOT.value, botName.toString());
+        }
+        if (chat != null) {
+            fields.put(EventTrackItem.FieldKey.CHAT.value, chat.toString());
+        }
+        if (amount != null) {
+            fields.put(EventTrackItem.FieldKey.AMOUNT.value, amount);
+        }
+        EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.BOT_SESSION, fields);
+        eventTrack.setPlatform(platform == null ? null : platform.toString());
+        eventTrack.setOrigin(origin);
+        this.submitTask(eventTrack);
+        return "SUCCESS";
+    }
+
     private EventTrack generateEventTrack(
             String uid,
             EventTrackItem.ReportType reportType,
