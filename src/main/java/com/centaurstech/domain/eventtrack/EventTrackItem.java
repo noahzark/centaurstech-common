@@ -61,17 +61,20 @@ public class EventTrackItem {
     /**
      * Restricted, tell Hengry before you change this part.
      */
-    public enum ReportType{
+    public enum ReportType implements Describable{
         USER_BEHAVIOR("上报⽤户⾏为数据"),
         BOT_ACTIVATION("上报BOT唤醒数据"),
         BOT_EXCEPTION("上报BOT异常数据"),
-        BOT_SESSION("上报BOT会话数据");
+        BOT_SESSION("上报BOT会话数据"),
+        SERVICE_DATA("上报后台数据");
         private String description;
 
         ReportType(String description) {
             this.description = description;
         }
 
+        @Override
+        public String getDescription() { return description; }
     }
 
     public enum Platform implements Describable {
@@ -209,7 +212,7 @@ public class EventTrackItem {
         EXCEPTION("exception"),
         FIELD("field"),
         CHAT("chat"),
-        NUMERIC("numeric");
+        DATA("data");
         public String value;
 
         FieldKey(String value) {

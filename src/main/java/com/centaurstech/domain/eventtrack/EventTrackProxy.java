@@ -117,33 +117,29 @@ public class EventTrackProxy {
         return "SUCCESS";
     }
 
-    public String addBotSessionEvent(String uid,
+    public String addServiceDataEvent(String uid,
                                      EventTrackItem.Describable platform,
                                      EventTrackItem.Describable field,
                                      EventTrackItem.Describable botName,
-                                     Integer chat,
-                                     String amount) {
+                                     String data) {
         Map<String, String> fields = new HashMap<>();
         fields.put(EventTrackItem.FieldKey.FIELD.value, field.toString());
         if (botName != null) {
             fields.put(EventTrackItem.FieldKey.BOT.value, botName.toString());
         }
-        if (chat != null) {
-            fields.put(EventTrackItem.FieldKey.CHAT.value, chat.toString());
+        if (data != null) {
+            fields.put(EventTrackItem.FieldKey.DATA.value, data);
         }
-        if (amount != null) {
-            fields.put(EventTrackItem.FieldKey.NUMERIC.value, amount);
-        }
-        EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.BOT_SESSION, fields);
+        EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.SERVICE_DATA, fields);
         eventTrack.setPlatform(platform == null ? null : platform.toString());
         eventTrack.setOrigin(origin);
         this.submitTask(eventTrack);
         return "SUCCESS";
     }
 
-    private EventTrack generateEventTrack(
+    public EventTrack generateEventTrack(
             String uid,
-            EventTrackItem.ReportType reportType,
+            EventTrackItem.Describable reportType,
             Map<String, String> fields) {
         EventTrack eventTrack = new EventTrack();
         eventTrack.setUid(uid);
@@ -153,7 +149,7 @@ public class EventTrackProxy {
         return eventTrack;
     }
 
-    private void submitTask(EventTrack eventTrack) {
+    public void submitTask(EventTrack eventTrack) {
         if (buffMode == BuffMode.LINKED_BLOCKING_QUEUE) {
             checkTrackQueue(reportSize);
             eventTrackQueue.add(eventTrack);
