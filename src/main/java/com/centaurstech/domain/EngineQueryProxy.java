@@ -16,4 +16,8 @@ public class EngineQueryProxy extends EngineQuery {
         super(requestParams);
     }
 
+    public EngineQueryProxy(Map<String,String> requestParams, boolean keepRequestParams) {
+        super(requestParams, keepRequestParams);
+    }
+
 }
