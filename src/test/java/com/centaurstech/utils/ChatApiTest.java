@@ -107,7 +107,7 @@ public class ChatApiTest {
     public void testEngineLogin() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/goingchatcn");
 
-        ChatApi chatApi = new ChatApi("http://aliyun-hz2.chewrobot.com/goingchatcn/chatbotserver.php");
+        ChatApi chatApi = new ChatApi("http://robot-engine.centaurstech.com/goingchatcn/chatbotserver.php");
         HashMap<String, String> loginRequest = new HashMap<>();
         loginRequest.put("aipioneer_username", "mimi2");
         loginRequest.put("nickname", "landey");
@@ -115,6 +115,54 @@ public class ChatApiTest {
 
         assertThat(result, is(IsNull.notNullValue()));
         assertThat(result.has("chat_key"), is(true));
+
+        System.out.println(engineQuery.getQueryTimeString());
+    }
+
+    @Test
+    public void testEngineChat() throws Exception {
+        EngineQuery engineQuery = new EngineQueryProxy("/goingchatcn");
+
+        // init request
+        ChatApi chatApi = new ChatApi("http://robot-engine.centaurstech.com/goingchatcn/chatbotserver.php");
+        HashMap<String, String> req = new HashMap<>();
+        req.put("aipioneer_username", "mimi2");
+        req.put("nickname", "landey");
+
+        // login
+        JSONObject result = chatApi.engineChatJson("start", req);
+        String chatKey = result.getString("chat_key");
+        req.put("chat_key", chatKey);
+        String answer = result.optString("reply", "");
+
+        // wait for welcome
+        while (answer.isEmpty()) {
+            Thread.sleep(1000); System.out.println("-1s ");
+            answer = chatApi
+                    .engineChatJson("receive", req)
+                    .optString("reply", "");
+        }
+        System.out.println("Welcome: " + answer);
+
+        // send message
+        HashMap<String, String> chatReq = new HashMap<>();
+        chatReq.putAll(req);
+        // ask robot
+        chatReq.put("message", "1");
+        String temp = chatApi
+                .engineChat("send", chatReq);
+        answer = new JSONObject(temp)
+                .optString("reply", "");
+        System.out.println("Sent: " + chatReq.get("message") + " Got: " + temp);
+
+        // wait for answer
+        while (answer.isEmpty()) {
+            Thread.sleep(1000); System.out.println("-1s ");
+            answer = chatApi
+                    .engineChatJson("receive", req)
+                    .optString("reply", "");
+        }
+        System.out.println("answer: " + answer);
 
         System.out.println(engineQuery.getQueryTimeString());
     }
