@@ -19,7 +19,7 @@ public class GPSConverterTest {
         GPSLocation converted = GPSConverter.gps84_To_Gcj02(original.getLat(), original.getLng());
 
         // Count the difference (meter)
-        double distance = DistanceCalculator.distanceBetween(apiConverted, converted) * 1000;
+        double distance = DistanceCalculator.distanceBetweenInKM(apiConverted, converted) * 1000;
 
         System.out.println(original);
         System.out.println(apiConverted);
