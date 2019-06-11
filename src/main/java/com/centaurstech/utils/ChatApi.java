@@ -3,14 +3,20 @@ package com.centaurstech.utils;
 import com.centaurstech.domain.ChatApp;
 import com.centaurstech.domain.GPSLocation;
 import com.centaurstech.utils.encode.Md5;
+import com.centaurstech.utils.http.RequestBodyUtil;
 import com.centaurstech.utils.http.SimpleHttpClient;
+import com.centaurstech.utils.time.TimeCalculator;
+
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,11 +25,15 @@ import java.util.UUID;
 
 /**
  * Created by Feliciano on 7/3/2018.
+ * @author feli
  */
 public class ChatApi extends SimpleHttpClient {
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
+
+    public static final MediaType OCTECT_STREAM
+            = MediaType.parse("application/octet-stream");
 
     public ChatApi(String server) {
         super(server);
@@ -41,7 +51,7 @@ public class ChatApi extends SimpleHttpClient {
     public JSONObject chat(String appkey, String appsecret,
                                        String uid, String nickname, String ask) throws IOException {
         // Prepare verify string
-        String now = (new Date()).getTime() + "";
+        String now = String.valueOf(TimeCalculator.nowInMillis());
         String verify = Md5.digest(appsecret + uid + now);
 
         // Generate request body
@@ -56,13 +66,51 @@ public class ChatApi extends SimpleHttpClient {
 
         String res = postForString(body);
         JSONObject result = new JSONObject(res);
-        /*
-        if (json.has("data"))
-            System.out.println("Appended data: " + json.getJSONObject("data"));
-        else
-            System.out.println("There is no extra data");
-        */
         return result;
+    }
+
+    public JSONObject voiceChat(ChatApp chatApp, String uid, String nickname, File file, String fileMime) throws IOException {
+        return this.voiceChat(chatApp.getAppkey(), chatApp.getAppsecret(), uid, nickname, file, fileMime);
+    }
+
+    public JSONObject voiceChat(String appkey, String appsecret, String uid, String nickname, File file, String fileMime) throws IOException {
+        HashMap<String, String> queries = generateQuery(appkey, appsecret, uid, nickname);
+
+        RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("speech", file.getName(), RequestBody.create(MediaType.parse(fileMime), file))
+                .build();
+
+        String res = postForString(requestBody, queries);
+        JSONObject result = new JSONObject(res);
+        return result;
+    }
+
+    public JSONObject voiceChat(ChatApp chatApp, String uid, String nickname, InputStream inputStream) throws IOException {
+        return this.voiceChat(chatApp.getAppkey(), chatApp.getAppsecret(), uid, nickname, inputStream);
+    }
+
+    public JSONObject voiceChat(String appkey, String appsecret, String uid, String nickname, InputStream inputStream) throws IOException {
+
+        HashMap<String, String> queries = generateQuery(appkey, appsecret, uid, nickname);
+
+        RequestBody requestBody = RequestBodyUtil.createFromInputStream(OCTECT_STREAM, inputStream);
+        String res = postForString(requestBody, queries);
+        JSONObject result = new JSONObject(res);
+        return result;
+    }
+
+    private HashMap<String, String> generateQuery(String appkey, String appsecret, String uid, String nickname) {
+        String now = String.valueOf(TimeCalculator.nowInMillis());
+        String verify = Md5.digest(appsecret + uid + now);
+
+        HashMap<String, String> queries = new HashMap(5);
+        queries.put("appkey", appkey);
+        queries.put("uid", uid);
+        queries.put("timestamp",now);
+        queries.put("verify", verify);
+        queries.put("nickname", nickname);
+
+        return queries;
     }
 
     public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt) throws IOException {
@@ -92,9 +140,8 @@ public class ChatApi extends SimpleHttpClient {
         return null;
     }
 
-
     public JSONObject getJson(String ticket, String serverSalt) throws IOException {
-        HashMap<String, String> request = new HashMap<>();
+        HashMap<String, String> request = new HashMap<>(1);
         request.put("key", ticket);
 
         JSONObject resJson = getForJSON(request, null);
@@ -136,7 +183,7 @@ public class ChatApi extends SimpleHttpClient {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String time = Long.toString(timestamp.getTime());
 
-        HashMap<String, String> request = new HashMap<>();
+        HashMap<String, String> request = new HashMap<>(3);
         request.put("chatkey", uid);
         request.put("timestamp", time);
         request.put("secret", Md5.digest(time + salt));
