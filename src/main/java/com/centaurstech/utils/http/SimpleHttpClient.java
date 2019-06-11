@@ -14,26 +14,17 @@ import java.util.concurrent.TimeUnit;
 
 import static com.centaurstech.utils.QueryHelper.urlEncodeUTF8;
 
-public class SimpleHttpClient {
-
-    private OkHttpClient client;
-
-    String server;
-
-    private Map<String, String> customHeaders
-            = new HashMap<>();
+/**
+ * @author feli
+ */
+public class SimpleHttpClient extends BaseHttpClient {
 
     public SimpleHttpClient(String server, long readTimeout) {
-        this.server = server;
-        client = new OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .writeTimeout(5, TimeUnit.SECONDS)
-                .readTimeout(readTimeout, TimeUnit.SECONDS)
-                .build();
+        super(server, readTimeout);
     }
 
     public SimpleHttpClient(String server) {
-        this(server, 30);
+        super(server, 30);
     }
 
     Request.Builder buildRequest(Map<String, String> headers, Map<String, String> queries) {
@@ -58,10 +49,11 @@ public class SimpleHttpClient {
     }
 
     public String getForString(Map<String, String> headers, Map<String, String> queries) throws IOException {
-        if (headers == null)
+        if (headers == null) {
             headers = customHeaders;
-        else
+        } else {
             headers.putAll(customHeaders);
+        }
         Request request = buildRequest(headers, queries)
                 .get()
                 .build();
@@ -75,26 +67,19 @@ public class SimpleHttpClient {
 
     public JSONObject getForJSON(Map<String, String> headers, Map<String, String> queries) throws IOException {
         String resStr = getForString(headers, queries);
-        try {
-            JSONObject resJson = new JSONObject(resStr);
-            if(resJson != null && resJson.has("retcode")){
-                if(0 == resJson.getInt("retcode")){
-                    return resJson;
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return getJsonObjectFromResponseString(resStr);
     }
 
     public String postForString(RequestBody body) throws IOException {
+        return postForString(body, null);
+    }
+
+    public String postForString(RequestBody body, Map<String, String> queries) throws IOException {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("cache-control", "no-cache");
         headers.putAll(customHeaders);
 
-        Request request = buildRequest(headers, null)
+        Request request = buildRequest(headers, queries)
                 .post(body)
                 .build();
 
@@ -106,7 +91,15 @@ public class SimpleHttpClient {
     }
 
     public JSONObject postForJSON(RequestBody body) throws IOException {
-        String resStr = postForString(body);
+        return postForJSON(body, null);
+    }
+
+    public JSONObject postForJSON(RequestBody body, Map<String, String> queries) throws IOException {
+        String resStr = postForString(body, queries);
+        return getJsonObjectFromResponseString(resStr);
+    }
+
+    private JSONObject getJsonObjectFromResponseString(String resStr) {
         try {
             JSONObject resJson = new JSONObject(resStr);
             if(resJson != null && resJson.has("retcode")){
@@ -119,25 +112,6 @@ public class SimpleHttpClient {
         }
 
         return null;
-    }
-
-    /**
-     * Add a customized request header to all requests sent using chat api
-     * @param key
-     * @param value
-     * @return
-     */
-    public String addCustomHeader(String key, String value) {
-        return customHeaders.put(key, value);
-    }
-
-    /**
-     * Remove customized request header in chat api
-     * @param key
-     * @return
-     */
-    public String removeCustomHeader(String key) {
-        return customHeaders.remove(key);
     }
 
 }
