@@ -41,6 +41,7 @@ public class BasicAuthData {
         return password;
     }
 
+    @Override
     public String toString() {
         return getUsername() + " " + getPassword();
     }
