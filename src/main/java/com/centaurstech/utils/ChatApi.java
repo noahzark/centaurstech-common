@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Feliciano on 7/3/2018.
@@ -34,6 +36,8 @@ public class ChatApi extends SimpleHttpClient {
 
     public static final MediaType OCTECT_STREAM
             = MediaType.parse("application/octet-stream");
+
+    final static Pattern AUDIO_MIME_CODEC_RATE_PATTERN = Pattern.compile("(codec=(?<codec>pcm|amr|wav))(;)?(rate=(?<rate>8000|16000))?");
 
     public ChatApi(String server) {
         super(server);
@@ -75,6 +79,13 @@ public class ChatApi extends SimpleHttpClient {
 
     public JSONObject voiceChat(String appkey, String appsecret, String uid, String nickname, File file, String fileMime) throws IOException {
         HashMap<String, String> queries = generateQuery(appkey, appsecret, uid, nickname);
+        Matcher matcher = AUDIO_MIME_CODEC_RATE_PATTERN.matcher(fileMime);
+        if (matcher.find()) {
+            String codec = matcher.group("codec");
+            if (codec != null) { queries.put("codec", codec); };
+            String rate = matcher.group("rate");
+            if (rate != null) { queries.put("rate", rate); };
+        }
 
         RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart("speech", file.getName(), RequestBody.create(MediaType.parse(fileMime), file))
@@ -85,13 +96,14 @@ public class ChatApi extends SimpleHttpClient {
         return result;
     }
 
-    public JSONObject voiceChat(ChatApp chatApp, String uid, String nickname, InputStream inputStream) throws IOException {
-        return this.voiceChat(chatApp.getAppkey(), chatApp.getAppsecret(), uid, nickname, inputStream);
+    public JSONObject voiceChat(ChatApp chatApp, String uid, String nickname, InputStream inputStream, String codec, String rate) throws IOException {
+        return this.voiceChat(chatApp.getAppkey(), chatApp.getAppsecret(), uid, nickname, inputStream, codec, rate);
     }
 
-    public JSONObject voiceChat(String appkey, String appsecret, String uid, String nickname, InputStream inputStream) throws IOException {
-
+    public JSONObject voiceChat(String appkey, String appsecret, String uid, String nickname, InputStream inputStream, String codec, String rate) throws IOException {
         HashMap<String, String> queries = generateQuery(appkey, appsecret, uid, nickname);
+        queries.put("codec", codec);
+        queries.put("rate", rate);
 
         RequestBody requestBody = RequestBodyUtil.createFromInputStream(OCTECT_STREAM, inputStream);
         String res = postForString(requestBody, queries);

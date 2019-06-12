@@ -29,7 +29,7 @@ public class ChatApiVoiceTest {
         ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/speech/chat");
         JSONObject result = chatApi.voiceChat(
                 chatApp, uid, nickname,
-                new File("./example/test.pcm"), "audio/basic;codec=pcm;rate=16000;channel=1");
+                new File("./example/test.pcm"), "audio/basic;codec=pcm;rate=8000;channel=1");
         System.out.println(result.opt("answer"));
         result.remove("answer");
         System.out.println(result);
@@ -46,7 +46,8 @@ public class ChatApiVoiceTest {
         ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/speech/chat");
         JSONObject result = chatApi.voiceChat(
                 chatApp, uid, nickname,
-                new FileInputStream(new File("./example/test.pcm")));
+                new FileInputStream(new File("./example/test.pcm")),
+                "pcm", "8000");
         System.out.println(result.opt("answer"));
         result.remove("answer");
         System.out.println(result);
