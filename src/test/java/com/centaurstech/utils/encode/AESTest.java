@@ -31,6 +31,7 @@ public class AESTest {
     }
 
     @Test
+    //测试带初始化向量的AES加密算法的编码与解码
     public void testAESCipher() throws Exception {
         String key = "vTwa+2iRgvFMyH4WuYMx0A==";
         String iv = "5a2wShLw7EWa8Fiw+cWYcQ==";
@@ -51,6 +52,7 @@ public class AESTest {
     }
 
     @Test
+    //测试带不带初始化向量的AES加密算法的编码与解码
     public void testAESCipherSimple() throws Exception {
         String key = "1234567890123456";
 
@@ -68,6 +70,7 @@ public class AESTest {
     }
 
     @Test
+    //迭代次数为65535和密钥长度为128的加密与解密测试
     public void test128EncodeAndDecode() throws Exception {
         String test = "abcdefghijklmnopqRSTUVWXYZ1234567890!@#$%^&*()_+~";
         String password = UUID.randomUUID().toString().replaceAll("-", "").substring(16);
@@ -103,6 +106,7 @@ public class AESTest {
     }
 
     @Test
+    //密钥长度为256的加密与解密测试
     public void test256EncodeAndDecode() throws Exception {
         Security.setProperty("crypto.policy", "unlimited");
 
@@ -137,6 +141,7 @@ public class AESTest {
     }
 
     @Test
+    //AES加密与AES+Base64编码测试(ECB模式)
     public void testECB256EncodeAndDecode() throws Exception {
         final SecretKeySpec key = new SecretKeySpec(
                 Md5.digest("2IBtBXdrqC3kCBs4gaceL7nl2nnFadQv").toLowerCase().getBytes(),

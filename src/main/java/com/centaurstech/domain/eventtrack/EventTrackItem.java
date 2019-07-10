@@ -61,7 +61,7 @@ public class EventTrackItem {
     /**
      * Restricted, tell Hengry before you change this part.
      */
-    public enum ReportType implements Describable{
+    public enum ReportType implements Describable {
         USER_BEHAVIOR("上报⽤户⾏为数据"),
         BOT_ACTIVATION("上报BOT唤醒数据"),
         BOT_EXCEPTION("上报BOT异常数据"),
@@ -74,7 +74,9 @@ public class EventTrackItem {
         }
 
         @Override
-        public String getDescription() { return description; }
+        public String getDescription() {
+            return description;
+        }
     }
 
     public enum Platform implements Describable {
@@ -99,7 +101,10 @@ public class EventTrackItem {
         LOGIN("用户登录"),
         UPVOTE("点赞"),
         DOWNVOTE("点踩"),
+        // 新增
+        // SEAT_CHANGE("电影票换座"),
         IMPOWER("用户授权");
+
         private String description;
 
         ActionType(String description) {

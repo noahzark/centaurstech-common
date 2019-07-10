@@ -32,6 +32,7 @@ public class EventTrackTest {
     }
 
     @Test
+    //线程测试哈希集合模块
     public void testHashSetMode() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("HashSet Mode");
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(
@@ -68,6 +69,7 @@ public class EventTrackTest {
     }
 
     @Test
+    //线程测试阻塞队列模块
     public void testBlockingQueueMode() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("ArrayBlockingQueue Mode");
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(
