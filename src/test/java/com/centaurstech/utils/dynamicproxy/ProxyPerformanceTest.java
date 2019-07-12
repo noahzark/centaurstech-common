@@ -20,6 +20,7 @@ import java.util.Map;
  */
 public class ProxyPerformanceTest {
 
+    //测试JDK和CGLib 动态代理的性能对比
     public static void main(String[] args) {
         //创建测试对象
         Target nativeTest = new TargetImpl();

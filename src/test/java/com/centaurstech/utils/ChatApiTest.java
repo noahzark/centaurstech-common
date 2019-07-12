@@ -20,6 +20,7 @@ import static org.junit.Assert.assertThat;
 public class ChatApiTest {
 
     @Test
+    //请求对话接口测试，post方法
     public void testChatApi() throws Exception {
         String uid = GetNetworkAddress.GetAddress("mac");
         JSONObject result = this.testChatApi(uid, "HELLO");
@@ -48,6 +49,7 @@ public class ChatApiTest {
     }
 
     @Test
+    //测试向对话接口发送Json数据
     public void testSendJson() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/api/chat/data");
 
@@ -64,6 +66,7 @@ public class ChatApiTest {
     }
 
     @Test
+    //测试请求对话接口后，并将接口返回的数据变成Json的格式
     public void testGetJson() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/api/chat/data");
 
@@ -78,6 +81,7 @@ public class ChatApiTest {
     }
 
     @Test
+    //向定位接口发送GPS定位信息，并测试返回的msg
     public void testSendGPS() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("POST /api/chat/geo");
 
@@ -92,6 +96,7 @@ public class ChatApiTest {
     }
 
     @Test
+    //测试请求定位接口后，获取接口返回的定位信息
     public void testGetGPS() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("GET /api/chat/geo");
 
@@ -104,6 +109,7 @@ public class ChatApiTest {
     }
 
     @Test
+    //测试登陆接口
     public void testEngineLogin() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/goingchatcn");
 
@@ -120,6 +126,7 @@ public class ChatApiTest {
     }
 
     @Test
+    //测试登陆对话整个流程
     public void testEngineChat() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/goingchatcn");
 
@@ -168,6 +175,7 @@ public class ChatApiTest {
     }
 
     @Test
+    //重置请求头信息
     public void testSettingHeaders() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/addHeaders");
 
@@ -185,6 +193,7 @@ public class ChatApiTest {
 
 class ChatApiTerminal {
 
+    //测试向对话接口发送BufferedReader内对话内容流程
     public static void main(String[] args) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         String uid = GetNetworkAddress.GetAddress("mac");

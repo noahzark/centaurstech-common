@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 
 public class TimeBasedCacheTest {
 
+    //put入TimeBasedCache是否成功
     @Test
     public void testCache() {
         TimeBasedCache<String> timeBasedCache = new TimeBasedCache<>(100);

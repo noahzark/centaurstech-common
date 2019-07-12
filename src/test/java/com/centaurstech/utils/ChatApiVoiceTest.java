@@ -22,6 +22,7 @@ public class ChatApiVoiceTest {
     ChatApp chatApp = new ChatApp(appkey, appsecret);
 
     @Test
+    //测试发送.amr音频文件给音频接口
     public void testSendVoiceFileInForm() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/inForm");
 
@@ -40,6 +41,7 @@ public class ChatApiVoiceTest {
     }
 
     @Test
+    //测试发送.pcm音频流给音频接口
     public void testSendVoiceFileInStream() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/inStream");
 

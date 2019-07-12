@@ -14,6 +14,7 @@ import static org.junit.Assert.assertThat;
 public class EngineQueryTest {
 
     @Test
+    //对EngineQueryProxy各构造方法、get、hasValue的测试
     public void testEngineQuery() {
         HashMap<String, String> requestParam = new HashMap();
 
