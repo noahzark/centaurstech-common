@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * @author initial Tongcheng.Tang
  * @author updated by Fangzhou.Long
+ * @author updated by Weisen.Yan on 21 August 2019
  * LINKED_BLOCKING_QUEUE BuffMode advised by Dongke.Zhou
  */
 public class EventTrackProxy {
@@ -56,6 +57,10 @@ public class EventTrackProxy {
     }
 
     public String addUserBehaviorEvent(String uid, EventTrackItem.Describable actionType, EventTrackItem.Describable permissionType) {
+        return addUserBehaviorEvent(uid, origin, actionType, permissionType);
+    }
+
+    public String addUserBehaviorEvent(String uid, String origin, EventTrackItem.Describable actionType, EventTrackItem.Describable permissionType) {
         Map<String, String> fields = new HashMap<>();
         fields.put(EventTrackItem.FieldKey.ACTION.value, actionType.toString());
         if (actionType == EventTrackItem.ActionType.IMPOWER) {
@@ -72,6 +77,10 @@ public class EventTrackProxy {
     }
 
     public String addBotActivationEvent(String uid, EventTrackItem.Describable platform, EventTrackItem.Describable botName) {
+        return addBotActivationEvent(uid, origin, platform, botName);
+    }
+
+    public String addBotActivationEvent(String uid, String origin, EventTrackItem.Describable platform, EventTrackItem.Describable botName) {
         Map<String, String> fields = new HashMap<>();
         if (botName != null) {
             fields.put(EventTrackItem.FieldKey.BOT.value, botName.toString());
@@ -84,6 +93,10 @@ public class EventTrackProxy {
     }
 
     public String addBotExceptionEvent(String uid, EventTrackItem.Platform platform, EventTrackItem.BotException exceptionType) {
+        return addBotExceptionEvent(uid, origin, platform, exceptionType);
+    }
+
+    public String addBotExceptionEvent(String uid, String origin, EventTrackItem.Platform platform, EventTrackItem.BotException exceptionType) {
         Map<String, String> fields = new HashMap<>();
         if (exceptionType == null) {
             return "exception missing";
@@ -97,11 +110,13 @@ public class EventTrackProxy {
         return "SUCCESS";
     }
 
-    public String addBotSessionEvent(String uid,
-                                     EventTrackItem.Describable platform,
-                                     EventTrackItem.Describable field,
-                                     EventTrackItem.Describable botName,
-                                     Integer chat) {
+    public String addBotSessionEvent(String uid, EventTrackItem.Describable platform, EventTrackItem.Describable field,
+                                     EventTrackItem.Describable botName, Integer chat) {
+        return addBotSessionEvent(uid, origin, platform, field, botName, chat);
+    }
+
+    public String addBotSessionEvent(String uid, String origin, EventTrackItem.Describable platform,
+                                     EventTrackItem.Describable field, EventTrackItem.Describable botName, Integer chat) {
         Map<String, String> fields = new HashMap<>();
         fields.put(EventTrackItem.FieldKey.FIELD.value, field.toString());
         if (botName != null) {
@@ -117,11 +132,13 @@ public class EventTrackProxy {
         return "SUCCESS";
     }
 
-    public String addServiceDataEvent(String uid,
-                                     EventTrackItem.Describable platform,
-                                     EventTrackItem.Describable field,
-                                     EventTrackItem.Describable botName,
-                                     String data) {
+    public String addServiceDataEvent(String uid, EventTrackItem.Describable platform,
+                                      EventTrackItem.Describable field, EventTrackItem.Describable botName, String data) {
+        return addServiceDataEvent(uid, origin, platform, field, botName, data);
+    }
+
+    public String addServiceDataEvent(String uid, String origin, EventTrackItem.Describable platform,
+                                      EventTrackItem.Describable field, EventTrackItem.Describable botName, String data) {
         Map<String, String> fields = new HashMap<>();
         fields.put(EventTrackItem.FieldKey.FIELD.value, field.toString());
         if (botName != null) {
