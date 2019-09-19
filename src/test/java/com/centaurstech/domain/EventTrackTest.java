@@ -24,7 +24,7 @@ public class EventTrackTest {
     public FutureTask<Void> buildFutureTask(EventTrackServiceHashSet eventSendSet) {
         return new FutureTask(() -> {
             int times = 0;
-            while (++times <= 10000) {
+            while (++times <= 1000) {
                 eventSendSet.addBotActivationEvent("10086", SMART_LIFE_APP, UNKNOWN);
             }
             return null;
@@ -61,7 +61,7 @@ public class EventTrackTest {
     public FutureTask<Boolean> buildFutureTask(EventTrackServiceBlockingQueue eventSendSet) {
         return new FutureTask(() -> {
             int times = 0;
-            while (++times <= 10000) {
+            while (++times <= 1000) {
                 eventSendSet.addBotActivationEvent("10086", SMART_LIFE_APP, UNKNOWN);
             }
             return true;
