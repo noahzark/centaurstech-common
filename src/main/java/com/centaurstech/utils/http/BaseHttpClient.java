@@ -47,4 +47,7 @@ public class BaseHttpClient {
         return customHeaders.remove(key);
     }
 
+    public String getServer() {
+        return server;
+    }
 }
