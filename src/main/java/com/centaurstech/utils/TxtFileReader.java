@@ -28,6 +28,18 @@ public class TxtFileReader {
     }
 
     /**
+     * Read a txt file into a list
+     * @param list
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static List<String> readList(List<String> list, String file) throws IOException {
+        Path path = Paths.get(file);
+        return Files.readAllLines(path);
+    }
+
+    /**
      * Read a txt file into a map, split by whitespace
      * @param map
      * @param file
