@@ -36,13 +36,13 @@ public class ChatApiTest {
         String nickname = "common-lib-test";
         ChatApp chatApp = new ChatApp(appkey, appsecret);
 
-        ChatApi chatApi = new ChatApi("http://localhost:18001/api/chat");
+        ChatApi chatApi = new ChatApi("http://localhost:18001");
 
         /* Chat without chatApp
         JSONObject result = chatApi.chat(appkey, appsecret, uid, nickname,
                 "HELLO");
         */
-        JSONObject result = chatApi.chat(chatApp, uid, nickname,ask);
+        JSONObject result = chatApi.chat(chatApp, "1561981", nickname,ask);
 
         System.out.println(engineQuery.getQueryTimeString());
         return result;
@@ -53,7 +53,7 @@ public class ChatApiTest {
     public void testSendJson() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/api/chat/data");
 
-        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/data");
+        ChatApi chatApi = new ChatApi("http://localhost:18001");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("hello", "world");
 
@@ -70,7 +70,7 @@ public class ChatApiTest {
     public void testGetJson() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/api/chat/data");
 
-        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/data");
+        ChatApi chatApi = new ChatApi("http://localhost:18001");
         String SERVER_SALT = " QUERY_RESULT_SALT";
         String ticket = "e5cf5e19-5495-491e-b69f-6c53cfc216bc";
         JSONObject result = chatApi.getJson(ticket, SERVER_SALT);
@@ -87,7 +87,7 @@ public class ChatApiTest {
 
         GPSLocation location = new GPSLocation(1.2d, 2.1d);
 
-        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/geo");
+        ChatApi chatApi = new ChatApi("http://localhost:18001");
 
         String msg = chatApi.sendGPS("qiwurobot", "123456", "common-lib-test", location);
         assertThat(msg, is("added"));
@@ -100,9 +100,9 @@ public class ChatApiTest {
     public void testGetGPS() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("GET /api/chat/geo");
 
-        ChatApi chatApi = new ChatApi("https://robot-service.centaurstech.com/api/chat/geo");
+        ChatApi chatApi = new ChatApi("http://localhost:18001");
 
-        GPSLocation location = chatApi.getGPS("common-lib-test", " XXXXXX");
+        GPSLocation location = chatApi.getGPS("common-lib-test", " GET_GEO_LOCATION_SALT");
         assertThat(location, is(IsNull.notNullValue()));
 
         System.out.println(engineQuery.getQueryTimeString());
@@ -113,7 +113,7 @@ public class ChatApiTest {
     public void testEngineLogin() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/goingchatcn");
 
-        ChatApi chatApi = new ChatApi("http://robot-engine.centaurstech.com/goingchatcn/chatbotserver.php");
+        EngineChatApi chatApi = new EngineChatApi("http://aliyun-sh6.chewrobot.com/goingchatcn/chatbotserver.php");
         HashMap<String, String> loginRequest = new HashMap<>();
         loginRequest.put("aipioneer_username", "mimi2");
         loginRequest.put("nickname", "landey");
@@ -131,9 +131,9 @@ public class ChatApiTest {
         EngineQuery engineQuery = new EngineQueryProxy("/goingchatcn");
 
         // init request
-        ChatApi chatApi = new ChatApi("http://robot-engine.centaurstech.com/goingchatcn/chatbotserver.php");
+        EngineChatApi chatApi = new EngineChatApi("http://aliyun-sh10.chewrobot.com/goingchatcn/chatbotserver.php");
         HashMap<String, String> req = new HashMap<>();
-        req.put("aipioneer_username", "mimi2");
+        req.put("aipioneer_username", "HotelTest");
         req.put("nickname", "landey");
 
         // login
@@ -155,7 +155,7 @@ public class ChatApiTest {
         HashMap<String, String> chatReq = new HashMap<>();
         chatReq.putAll(req);
         // ask robot
-        chatReq.put("message", "1");
+        chatReq.put("message", "我要订深圳的酒店。");
         String temp = chatApi
                 .engineChat("send", chatReq);
         answer = new JSONObject(temp)
@@ -179,11 +179,11 @@ public class ChatApiTest {
     public void testSettingHeaders() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/addHeaders");
 
-        ChatApi chatApi = new ChatApi("http://echo.chewrobot.com/anything");
+        ChatApi chatApi = new ChatApi("http://echo.chewrobot.com");
         chatApi.addCustomHeader("X-Forwarded-For", "121.35.103.1");
         chatApi.addCustomHeader("Qw-Connecting-Ip", "121.35.103.1");
 
-        String result = chatApi.getForString(null, null);
+        String result = chatApi.getForString("/anything", null, null);
 
         System.out.println(result);
         System.out.println(engineQuery.getQueryTimeString());
