@@ -68,7 +68,13 @@ public class ChatApi extends SimpleHttpClient {
                 .add("msg", ask)
                 .build();
 
-        String res = postForString(body);
+        String res;
+        if (isSingleApiServer) {
+            res = postForString(body);
+        } else {
+            res = postForString("/api/chat", body);
+        }
+
         JSONObject result = new JSONObject(res);
         return result;
     }
@@ -91,7 +97,12 @@ public class ChatApi extends SimpleHttpClient {
                 .addFormDataPart("speech", file.getName(), RequestBody.create(MediaType.parse(fileMime), file))
                 .build();
 
-        String res = postForString(requestBody, queries);
+        String res;
+        if (isSingleApiServer) {
+            res = postForString(requestBody, queries);
+        } else {
+            res = postForString("/api/chat", requestBody, queries);
+        }
         JSONObject result = new JSONObject(res);
         return result;
     }
@@ -106,7 +117,12 @@ public class ChatApi extends SimpleHttpClient {
         queries.put("rate", rate);
 
         RequestBody requestBody = RequestBodyUtil.createFromInputStream(OCTECT_STREAM, inputStream);
-        String res = postForString(requestBody, queries);
+        String res;
+        if (isSingleApiServer) {
+            res = postForString(requestBody, queries);
+        } else {
+            res = postForString("/api/chat", requestBody, queries);
+        }
         JSONObject result = new JSONObject(res);
         return result;
     }
@@ -145,7 +161,12 @@ public class ChatApi extends SimpleHttpClient {
                 .add("resulttype", queryResultType)
                 .build();
 
-        JSONObject resJson = postForJSON(body);
+        JSONObject resJson;
+        if (isSingleApiServer) {
+            resJson = postForJSON(body);
+        } else {
+            resJson = postForJSON("/api/chat/data", body);
+        }
         if (resJson != null) {
             return ticket;
         }
@@ -156,7 +177,12 @@ public class ChatApi extends SimpleHttpClient {
         HashMap<String, String> request = new HashMap<>(1);
         request.put("key", ticket);
 
-        JSONObject resJson = getForJSON(request, null);
+        JSONObject resJson;
+        if (isSingleApiServer) {
+            resJson = getForJSON(request, null);
+        } else {
+            resJson = getForJSON("/api/chat/data", request, null);
+        }
         if (resJson != null) {
             return resJson;
         }
@@ -177,7 +203,12 @@ public class ChatApi extends SimpleHttpClient {
 
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
-        JSONObject resJson = postForJSON(body);
+        JSONObject resJson;
+        if (isSingleApiServer) {
+            resJson = postForJSON(body);
+        } else {
+            resJson = postForJSON("/api/chat/geo", body);
+        }
         if (resJson != null && resJson.has("msg")) {
             return resJson.getString("msg");
         }
@@ -200,7 +231,12 @@ public class ChatApi extends SimpleHttpClient {
         request.put("timestamp", time);
         request.put("secret", Md5.digest(time + salt));
 
-        JSONObject resJson = getForJSON(request, null);
+        JSONObject resJson;
+        if (isSingleApiServer) {
+            resJson = getForJSON(request, null);
+        } else {
+            resJson = getForJSON("/api/chat/geo", request, null);
+        }
         if (resJson != null && resJson.has("geo")) {
             JSONObject geo = resJson.getJSONObject("geo");
             if (geo.has("lat")) {
@@ -227,19 +263,12 @@ public class ChatApi extends SimpleHttpClient {
         return geoInfo;
     }
 
+    @Deprecated
     public String engineChat(String action, Map<String, String> data) throws IOException {
-        FormBody.Builder bodyBuilder = new FormBody.Builder()
-                .add("action", action)
-                .add("format", "json");
-        for (String entry : data.keySet()) {
-            bodyBuilder.add(entry, data.get(entry));
-        }
-        FormBody body = bodyBuilder.build();
-
-        String resStr = postForString(body);
-        return resStr;
+        return (new EngineChatApi(this.getServer())).engineChat(action, data);
     }
 
+    @Deprecated
     public JSONObject engineChatJson(String action, Map<String, String> data) throws IOException {
         String resStr = engineChat(action, data);
         JSONObject resJson = null;
