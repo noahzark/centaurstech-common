@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.centaurstech.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.centaurstech.common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.centaurstech.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.centaurstech.common.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.iml" filepath="$PROJECT_DIR$/.idea/modules/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common.test.iml" />

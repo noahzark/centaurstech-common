@@ -2,6 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="com.centaurstech.common.main" target="1.8" />
+      <module name="com.centaurstech.common.test" target="1.8" />
       <module name="common.main" target="1.8" />
       <module name="common.test" target="1.8" />
       <module name="common_main" target="1.8" />
