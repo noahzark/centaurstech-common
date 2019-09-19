@@ -56,4 +56,9 @@ public class StringExtractor {
     public static String[] extractFacebookAuth(String authHeaderStr) {
         return extractBase64(authHeaderStr, FACEBOOK_AUTH_PATTERN);
     }
+
+    public static long countOccurences(String someString, char searchedChar) {
+        return someString.chars().filter(ch -> ch == searchedChar).count();
+    }
+
 }
