@@ -1,5 +1,6 @@
 package com.centaurstech.utils.http;
 
+import com.centaurstech.utils.StringExtractor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -19,15 +20,24 @@ import static com.centaurstech.utils.QueryHelper.urlEncodeUTF8;
  */
 public class SimpleHttpClient extends BaseHttpClient {
 
+    public boolean isSingleApiServer;
+
     public SimpleHttpClient(String server, long readTimeout) {
         super(server, readTimeout);
+        isSingleApiServer = StringExtractor.countOccurences(server, '/') > 2;
     }
 
     public SimpleHttpClient(String server) {
         super(server, 30);
+        isSingleApiServer = StringExtractor.countOccurences(server, '/') > 2;
     }
 
+    @Deprecated
     Request.Builder buildRequest(Map<String, String> headers, Map<String, String> queries) {
+        return buildRequest("", headers, queries);
+    }
+
+    Request.Builder buildRequest(String api, Map<String, String> headers, Map<String, String> queries) {
         String queryParameters = "";
         if (queries != null && queries.size() > 0) {
             queryParameters = "?" + queries.entrySet().stream()
@@ -37,7 +47,7 @@ public class SimpleHttpClient extends BaseHttpClient {
         }
 
         Request.Builder requestBuilder = new Request.Builder()
-                .url(server + queryParameters);
+                .url(server + api + queryParameters);
 
         if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -48,13 +58,18 @@ public class SimpleHttpClient extends BaseHttpClient {
         return requestBuilder;
     }
 
+    @Deprecated
     public String getForString(Map<String, String> headers, Map<String, String> queries) throws IOException {
+        return getForString("", headers, queries);
+    }
+
+    public String getForString(String api, Map<String, String> headers, Map<String, String> queries) throws IOException {
         if (headers == null) {
             headers = customHeaders;
         } else {
             headers.putAll(customHeaders);
         }
-        Request request = buildRequest(headers, queries)
+        Request request = buildRequest(api, headers, queries)
                 .get()
                 .build();
 
@@ -65,41 +80,68 @@ public class SimpleHttpClient extends BaseHttpClient {
         return res;
     }
 
+    @Deprecated
     public JSONObject getForJSON(Map<String, String> headers, Map<String, String> queries) throws IOException {
-        String resStr = getForString(headers, queries);
+        return getForJSON("", headers, queries);
+    }
+
+    public JSONObject getForJSON(String api, Map<String, String> headers, Map<String, String> queries) throws IOException {
+        String resStr = getForString(api, headers, queries);
         return getJsonObjectFromResponseString(resStr);
     }
 
+    @Deprecated
     public String postForString(RequestBody body) throws IOException {
-        return postForString(body, null);
+        return postForString("", body);
     }
 
+    public String postForString(String api, RequestBody body) throws IOException {
+        return postForString(api, body, null);
+    }
+
+    @Deprecated
     public String postForString(RequestBody body, Map<String, String> queries) throws IOException {
+        return postForString("", body, queries);
+    }
+
+    public String postForString(String api, RequestBody body, Map<String, String> queries) throws IOException {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("cache-control", "no-cache");
         headers.putAll(customHeaders);
 
-        Request request = buildRequest(headers, queries)
+        Request request = buildRequest(api, headers, queries)
                 .post(body)
                 .build();
 
         Response response = client.newCall(request).execute();
-        String res = response.body().string();
-        // System.out.println(res);
+        String res = null;
+        if (response.body() != null) {
+            res = response.body().string();
+        }
 
         return res;
     }
 
+    @Deprecated
     public JSONObject postForJSON(RequestBody body) throws IOException {
-        return postForJSON(body, null);
+        return postForJSON("", body);
     }
 
+    public JSONObject postForJSON(String api, RequestBody body) throws IOException {
+        return postForJSON(api, body, null);
+    }
+
+    @Deprecated
     public JSONObject postForJSON(RequestBody body, Map<String, String> queries) throws IOException {
-        String resStr = postForString(body, queries);
+        return postForJSON("", body, queries);
+    }
+
+    public JSONObject postForJSON(String api, RequestBody body, Map<String, String> queries) throws IOException {
+        String resStr = postForString(api, body, queries);
         return getJsonObjectFromResponseString(resStr);
     }
 
-    private JSONObject getJsonObjectFromResponseString(String resStr) {
+    private static JSONObject getJsonObjectFromResponseString(String resStr) {
         try {
             JSONObject resJson = new JSONObject(resStr);
             if(resJson != null && resJson.has("retcode")){
