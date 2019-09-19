@@ -217,6 +217,7 @@ public class EventTrackItem {
         EXCEPTION("exception"),
         FIELD("field"),
         CHAT("chat"),
+        NUMERIC("numeric"),
         DATA("data");
         public String value;
 
