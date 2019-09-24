@@ -66,6 +66,7 @@ public class ChatApi extends SimpleHttpClient {
                 .add("verify", verify)
                 .add("nickname", nickname)
                 .add("msg", ask)
+                .add("new_session", "True")
                 .build();
 
         String res;

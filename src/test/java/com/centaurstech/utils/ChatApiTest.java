@@ -23,7 +23,7 @@ public class ChatApiTest {
     //请求对话接口测试，post方法
     public void testChatApi() throws Exception {
         String uid = GetNetworkAddress.GetAddress("mac");
-        JSONObject result = this.testChatApi(uid, "HELLO");
+        JSONObject result = this.testChatApi(uid, "你好啊");
 
         assertThat(result.get("retcode"), is(0));
     }
@@ -42,7 +42,7 @@ public class ChatApiTest {
         JSONObject result = chatApi.chat(appkey, appsecret, uid, nickname,
                 "HELLO");
         */
-        JSONObject result = chatApi.chat(chatApp, "1561981", nickname,ask);
+        JSONObject result = chatApi.chat(chatApp, "15619811", nickname,ask);
 
         System.out.println(engineQuery.getQueryTimeString());
         return result;
@@ -187,29 +187,6 @@ public class ChatApiTest {
 
         System.out.println(result);
         System.out.println(engineQuery.getQueryTimeString());
-    }
-
-}
-
-class ChatApiTerminal {
-
-    //测试向对话接口发送BufferedReader内对话内容流程
-    public static void main(String[] args) throws Exception {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-        String uid = GetNetworkAddress.GetAddress("mac");
-
-        System.out.println("Loading...");
-        System.out.println(ChatApiTest.testChatApi(uid, "HELLO").get("msg"));
-
-        String line;
-        while(!(line = bufferedReader.readLine()).equals("exit")) {
-            JSONObject result = ChatApiTest.testChatApi(uid, line);
-            System.out.println(result.get("msg"));
-            result.remove("msg");
-            System.out.println(result);
-        }
-
-        System.out.println("Bye");
     }
 
 }
