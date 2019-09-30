@@ -13,6 +13,9 @@ import java.util.Set;
  */
 public class TxtFileReader {
 
+    public static final String UTF8_BOM = "\uFEFF";
+    // TODO: Remove BOM
+
     /**
      * Read a txt file into a set
      * @param file
