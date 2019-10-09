@@ -104,9 +104,16 @@ public class SimpleHttpClient extends BaseHttpClient {
         return postForString("", body, queries);
     }
 
+    @Deprecated
+    public String postForString(RequestBody body, Map<String, String> headers, Map<String, String> queries) throws IOException {
+        return postForString("", headers, body, queries);
+    }
+
     public String postForString(String api, RequestBody body, Map<String, String> queries) throws IOException {
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("cache-control", "no-cache");
+        return postForString(api, new HashMap<>(), body, queries);
+    }
+
+    public String postForString(String api, Map<String, String> headers, RequestBody body, Map<String, String> queries) throws IOException {
         headers.putAll(customHeaders);
 
         Request request = buildRequest(api, headers, queries)
@@ -138,6 +145,11 @@ public class SimpleHttpClient extends BaseHttpClient {
 
     public JSONObject postForJSON(String api, RequestBody body, Map<String, String> queries) throws IOException {
         String resStr = postForString(api, body, queries);
+        return getJsonObjectFromResponseString(resStr);
+    }
+
+    public JSONObject postForJSON(String api, Map<String, String> headers, RequestBody body, Map<String, String> queries) throws IOException {
+        String resStr = postForString(api, headers, body, queries);
         return getJsonObjectFromResponseString(resStr);
     }
 

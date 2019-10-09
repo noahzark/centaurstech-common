@@ -52,8 +52,29 @@ public class ChatApi extends SimpleHttpClient {
                                 uid, nickname, ask);
     }
 
+    public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask, boolean newSession) throws IOException {
+        return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
+                uid, nickname, ask, newSession);
+    }
+
+    public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask, boolean newSession, Map<String, String> headers) throws IOException {
+        return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
+                uid, nickname, ask, newSession, headers);
+    }
+
     public JSONObject chat(String appkey, String appsecret,
-                                       String uid, String nickname, String ask) throws IOException {
+                           String uid, String nickname, String ask) throws IOException {
+        return chat(appkey, appsecret, uid, nickname, ask, false);
+    }
+
+    public JSONObject chat(String appkey, String appsecret,
+                           String uid, String nickname, String ask, boolean newSession) throws IOException {
+        return chat(appkey, appsecret, uid, nickname, ask, newSession, new HashMap<>());
+    }
+
+    public JSONObject chat(String appkey, String appsecret,
+                                       String uid, String nickname, String ask, boolean newSession,
+                           Map<String, String> headers) throws IOException {
         // Prepare verify string
         String now = String.valueOf(TimeCalculator.nowInMillis());
         String verify = Md5.digest(appsecret + uid + now);
@@ -66,13 +87,14 @@ public class ChatApi extends SimpleHttpClient {
                 .add("verify", verify)
                 .add("nickname", nickname)
                 .add("msg", ask)
+                .add("new_session", String.valueOf(newSession))
                 .build();
 
         String res;
         if (isSingleApiServer) {
-            res = postForString(body);
+            res = postForString(body, headers, null);
         } else {
-            res = postForString("/api/chat", body);
+            res = postForString("/api/chat", headers, body, null);
         }
 
         JSONObject result = new JSONObject(res);
