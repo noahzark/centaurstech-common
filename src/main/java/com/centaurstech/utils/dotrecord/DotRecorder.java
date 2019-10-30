@@ -17,7 +17,7 @@ public class DotRecorder {
     public long lastDotTime;
     public long recordStart;
 
-    static final ThreadLocal<Map<String, DotRecorder>> sThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, DotRecorder>> DOT_THREAD_LOCAL = new ThreadLocal<>();
 
     /**
      * get instance from thread local, remember to destroy before thread exits
@@ -25,13 +25,13 @@ public class DotRecorder {
      * @return
      */
     public static DotRecorder getInstance(String name) {
-        if (sThreadLocal.get() == null) {
-            sThreadLocal.set(new HashMap<>(10));
+        if (DOT_THREAD_LOCAL.get() == null) {
+            DOT_THREAD_LOCAL.set(new HashMap<>(10));
         }
-        if (!sThreadLocal.get().containsKey(name)) {
-            sThreadLocal.get().put(name, new DotRecorder(name));
+        if (!DOT_THREAD_LOCAL.get().containsKey(name)) {
+            DOT_THREAD_LOCAL.get().put(name, new DotRecorder(name));
         }
-        return sThreadLocal.get().get(name);
+        return DOT_THREAD_LOCAL.get().get(name);
     }
 
     /**
@@ -39,8 +39,8 @@ public class DotRecorder {
      * @param name
      */
     public static void destroyInstance(String name) {
-        if (sThreadLocal.get() != null) {
-            sThreadLocal.get().remove(name);
+        if (DOT_THREAD_LOCAL.get() != null) {
+            DOT_THREAD_LOCAL.get().remove(name);
         }
     }
 
@@ -48,8 +48,8 @@ public class DotRecorder {
      * clean up all instances
      */
     public static void cleanInstances() {
-        if (sThreadLocal.get() != null) {
-            sThreadLocal.remove();
+        if (DOT_THREAD_LOCAL.get() != null) {
+            DOT_THREAD_LOCAL.remove();
         }
     }
 
