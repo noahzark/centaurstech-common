@@ -32,7 +32,7 @@ public class DotRecorder {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{");
+        sb.append("{\n");
         for (DotRecord d : dots) {
             sb.append("\t");
             sb.append(d);
