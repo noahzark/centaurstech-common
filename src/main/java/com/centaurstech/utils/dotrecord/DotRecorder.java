@@ -60,8 +60,8 @@ public class DotRecorder {
     public DotRecorder(String name) {
         this.name = name;
         dots = new LinkedList<>();
-        lastDotTime = -1;
-        recordStart = System.currentTimeMillis();
+        lastDotTime = System.currentTimeMillis();
+        recordStart = lastDotTime;
     }
 
     /**
