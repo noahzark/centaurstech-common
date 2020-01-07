@@ -15,6 +15,9 @@ public class DotRecord {
     public LocalDateTime dotDatetime;
     public long interval;
 
+    public DotRecord() {
+    }
+
     public DotRecord(String dotName, long lastDotTime) {
         long timestamp = System.currentTimeMillis();
         if (lastDotTime <= 0) {
