@@ -9,14 +9,17 @@ import org.junit.Test;
 public class XXTEATest {
 
     @Test
+    //通过Base64编码并解码
     public void testEncodeAndDecode() throws Exception {
         String test = "abcdefghijklmnopqRSTUVWXYZ1234567890!@#$%^&*()_+~";
         String pass = "abcdefg1234567890!@#$";
 
+        //Base64通过密钥pass编码test
         String encrypted = XXTEA.encryptToBase64String(test, pass);
 
         System.out.println(encrypted);
 
+        //解码Base64
         String decrypted = XXTEA.decryptBase64StringToString(encrypted, pass);
 
         System.out.println(decrypted);

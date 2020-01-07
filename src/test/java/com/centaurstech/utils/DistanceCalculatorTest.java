@@ -12,9 +12,11 @@ public class DistanceCalculatorTest {
 
 
     @Test
+    //计算两地之间的距离(单位：KM)
     public void testDistance() throws Exception {
-        double fromSanyaToWuhan = DistanceCalculator.distanceBetween(18.25d,109.5d,  30.6d, 114.3d);
-        assertThat((fromSanyaToWuhan> 1456 && fromSanyaToWuhan < 1457), is(true));
+        double fromSanyaToWuhan = DistanceCalculator.distanceBetweenInKM(18.25d,109.5d,  30.6d, 114.3d);
+        System.out.println("From Sanya to Wuhan: " + fromSanyaToWuhan * 1000);
+        assertThat((fromSanyaToWuhan> 1450 && fromSanyaToWuhan < 1460), is(true));
     }
 
 }

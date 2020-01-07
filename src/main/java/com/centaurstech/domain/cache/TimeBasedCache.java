@@ -14,10 +14,14 @@ public class TimeBasedCache<Content> {
 
     Map<String, Long> expireWhen;
 
-    public TimeBasedCache(Long expireIn) {
-        this.expireIn = expireIn;
+    public TimeBasedCache(Long expireInMillis) {
+        this.expireIn = expireInMillis;
         container = new HashMap<>();
         expireWhen = new HashMap<>();
+    }
+
+    public TimeBasedCache(int expireInSeconds) {
+        this(expireInSeconds * 1000L);
     }
 
     public TimeBasedCache() {
@@ -45,7 +49,7 @@ public class TimeBasedCache<Content> {
     }
 
     public boolean contains(String key) {
-        return get(key) == null;
+        return get(key) != null;
     }
 
 }

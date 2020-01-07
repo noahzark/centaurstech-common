@@ -13,7 +13,16 @@ public class StringExtractor {
 
     public final static String FACEBOOK_AUTH_PATTERN = "^Facebook\\s(\\w+={0,2})";
 
+    public static boolean StringEmptyOrNull(String data) {
+        if (data == null || data.isEmpty())
+            return true;
+        return false;
+    }
+
     private static Matcher match(String data, String patternStr){
+        if (data == null) {
+            throw new IllegalArgumentException("Null match string");
+        }
         Pattern pattern = Pattern.compile(patternStr);
         Matcher matcher = pattern.matcher(data);
         if(!matcher.matches()){
@@ -23,6 +32,9 @@ public class StringExtractor {
     }
 
     private static String[] extractBase64(String data, String pattern){
+        if (StringEmptyOrNull(data)) {
+            return new String[]{"", ""};
+        }
         Matcher matcher = match(data,pattern);
         String b64authString = matcher.group(1);
         byte[] authBytes = Base64.getDecoder().decode(b64authString);
@@ -31,6 +43,8 @@ public class StringExtractor {
     }
 
     public static String extractAuthToken(String data){
+        if (data == null)
+            return "";
         Matcher matcher = match(data, BEARER_TOKEN_PATTERN);
         return matcher.group(1);
     }
@@ -42,4 +56,9 @@ public class StringExtractor {
     public static String[] extractFacebookAuth(String authHeaderStr) {
         return extractBase64(authHeaderStr, FACEBOOK_AUTH_PATTERN);
     }
+
+    public static long countOccurences(String someString, char searchedChar) {
+        return someString.chars().filter(ch -> ch == searchedChar).count();
+    }
+
 }

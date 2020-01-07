@@ -16,10 +16,11 @@ public class GPSConverterTest {
     public void testGPSToGaode() throws Exception {
         GPSLocation original = new GPSLocation(22.530448,113.952733);
         GPSLocation apiConverted = new GPSLocation(22.527450629341,113.957622070313);
+        //转为火星坐标系，中国国家测绘局制定的坐标系统
         GPSLocation converted = GPSConverter.gps84_To_Gcj02(original.getLat(), original.getLng());
 
-        // Count the difference (meter)
-        double distance = DistanceCalculator.distanceBetween(apiConverted, converted) * 1000;
+        // Count the difference (meter) 计算两地距离
+        double distance = DistanceCalculator.distanceBetweenInKM(apiConverted, converted) * 1000;
 
         System.out.println(original);
         System.out.println(apiConverted);

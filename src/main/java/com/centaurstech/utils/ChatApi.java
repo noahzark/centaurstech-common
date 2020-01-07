@@ -3,27 +3,41 @@ package com.centaurstech.utils;
 import com.centaurstech.domain.ChatApp;
 import com.centaurstech.domain.GPSLocation;
 import com.centaurstech.utils.encode.Md5;
+import com.centaurstech.utils.http.RequestBodyUtil;
 import com.centaurstech.utils.http.SimpleHttpClient;
+import com.centaurstech.utils.time.TimeCalculator;
+
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Feliciano on 7/3/2018.
+ * @author feli
  */
 public class ChatApi extends SimpleHttpClient {
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
+
+    public static final MediaType OCTECT_STREAM
+            = MediaType.parse("application/octet-stream");
+
+    final static Pattern AUDIO_MIME_CODEC_RATE_PATTERN = Pattern.compile("(codec=(?<codec>pcm|amr|wav))(;)?(rate=(?<rate>8000|16000))?");
 
     public ChatApi(String server) {
         super(server);
@@ -38,10 +52,31 @@ public class ChatApi extends SimpleHttpClient {
                                 uid, nickname, ask);
     }
 
+    public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask, boolean newSession) throws IOException {
+        return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
+                uid, nickname, ask, newSession);
+    }
+
+    public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask, boolean newSession, Map<String, String> headers) throws IOException {
+        return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
+                uid, nickname, ask, newSession, headers);
+    }
+
     public JSONObject chat(String appkey, String appsecret,
-                                       String uid, String nickname, String ask) throws IOException {
+                           String uid, String nickname, String ask) throws IOException {
+        return chat(appkey, appsecret, uid, nickname, ask, false);
+    }
+
+    public JSONObject chat(String appkey, String appsecret,
+                           String uid, String nickname, String ask, boolean newSession) throws IOException {
+        return chat(appkey, appsecret, uid, nickname, ask, newSession, new HashMap<>());
+    }
+
+    public JSONObject chat(String appkey, String appsecret,
+                                       String uid, String nickname, String ask, boolean newSession,
+                           Map<String, String> headers) throws IOException {
         // Prepare verify string
-        String now = (new Date()).getTime() + "";
+        String now = String.valueOf(TimeCalculator.nowInMillis());
         String verify = Md5.digest(appsecret + uid + now);
 
         // Generate request body
@@ -52,17 +87,80 @@ public class ChatApi extends SimpleHttpClient {
                 .add("verify", verify)
                 .add("nickname", nickname)
                 .add("msg", ask)
+                .add("new_session", String.valueOf(newSession))
                 .build();
 
-        String res = postForString(body);
+        String res;
+        if (isSingleApiServer) {
+            res = postForString(body, headers, null);
+        } else {
+            res = postForString("/api/chat", headers, body, null);
+        }
+
         JSONObject result = new JSONObject(res);
-        /*
-        if (json.has("data"))
-            System.out.println("Appended data: " + json.getJSONObject("data"));
-        else
-            System.out.println("There is no extra data");
-        */
         return result;
+    }
+
+    public JSONObject voiceChat(ChatApp chatApp, String uid, String nickname, File file, String fileMime) throws IOException {
+        return this.voiceChat(chatApp.getAppkey(), chatApp.getAppsecret(), uid, nickname, file, fileMime);
+    }
+
+    public JSONObject voiceChat(String appkey, String appsecret, String uid, String nickname, File file, String fileMime) throws IOException {
+        HashMap<String, String> queries = generateQuery(appkey, appsecret, uid, nickname);
+        Matcher matcher = AUDIO_MIME_CODEC_RATE_PATTERN.matcher(fileMime);
+        if (matcher.find()) {
+            String codec = matcher.group("codec");
+            if (codec != null) { queries.put("codec", codec); };
+            String rate = matcher.group("rate");
+            if (rate != null) { queries.put("rate", rate); };
+        }
+
+        RequestBody requestBody = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("speech", file.getName(), RequestBody.create(MediaType.parse(fileMime), file))
+                .build();
+
+        String res;
+        if (isSingleApiServer) {
+            res = postForString(requestBody, queries);
+        } else {
+            res = postForString("/api/chat", requestBody, queries);
+        }
+        JSONObject result = new JSONObject(res);
+        return result;
+    }
+
+    public JSONObject voiceChat(ChatApp chatApp, String uid, String nickname, InputStream inputStream, String codec, String rate) throws IOException {
+        return this.voiceChat(chatApp.getAppkey(), chatApp.getAppsecret(), uid, nickname, inputStream, codec, rate);
+    }
+
+    public JSONObject voiceChat(String appkey, String appsecret, String uid, String nickname, InputStream inputStream, String codec, String rate) throws IOException {
+        HashMap<String, String> queries = generateQuery(appkey, appsecret, uid, nickname);
+        queries.put("codec", codec);
+        queries.put("rate", rate);
+
+        RequestBody requestBody = RequestBodyUtil.createFromInputStream(OCTECT_STREAM, inputStream);
+        String res;
+        if (isSingleApiServer) {
+            res = postForString(requestBody, queries);
+        } else {
+            res = postForString("/api/chat", requestBody, queries);
+        }
+        JSONObject result = new JSONObject(res);
+        return result;
+    }
+
+    private HashMap<String, String> generateQuery(String appkey, String appsecret, String uid, String nickname) {
+        String now = String.valueOf(TimeCalculator.nowInMillis());
+        String verify = Md5.digest(appsecret + uid + now);
+
+        HashMap<String, String> queries = new HashMap(5);
+        queries.put("appkey", appkey);
+        queries.put("uid", uid);
+        queries.put("timestamp",now);
+        queries.put("verify", verify);
+        queries.put("nickname", nickname);
+
+        return queries;
     }
 
     public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt) throws IOException {
@@ -85,19 +183,28 @@ public class ChatApi extends SimpleHttpClient {
                 .add("resulttype", queryResultType)
                 .build();
 
-        JSONObject resJson = postForJSON(body);
+        JSONObject resJson;
+        if (isSingleApiServer) {
+            resJson = postForJSON(body);
+        } else {
+            resJson = postForJSON("/api/chat/data", body);
+        }
         if (resJson != null) {
             return ticket;
         }
         return null;
     }
 
-
     public JSONObject getJson(String ticket, String serverSalt) throws IOException {
-        HashMap<String, String> request = new HashMap<>();
+        HashMap<String, String> request = new HashMap<>(1);
         request.put("key", ticket);
 
-        JSONObject resJson = getForJSON(request, null);
+        JSONObject resJson;
+        if (isSingleApiServer) {
+            resJson = getForJSON(request, null);
+        } else {
+            resJson = getForJSON("/api/chat/data", request, null);
+        }
         if (resJson != null) {
             return resJson;
         }
@@ -118,7 +225,12 @@ public class ChatApi extends SimpleHttpClient {
 
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
-        JSONObject resJson = postForJSON(body);
+        JSONObject resJson;
+        if (isSingleApiServer) {
+            resJson = postForJSON(body);
+        } else {
+            resJson = postForJSON("/api/chat/geo", body);
+        }
         if (resJson != null && resJson.has("msg")) {
             return resJson.getString("msg");
         }
@@ -136,12 +248,17 @@ public class ChatApi extends SimpleHttpClient {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String time = Long.toString(timestamp.getTime());
 
-        HashMap<String, String> request = new HashMap<>();
+        HashMap<String, String> request = new HashMap<>(3);
         request.put("chatkey", uid);
         request.put("timestamp", time);
         request.put("secret", Md5.digest(time + salt));
 
-        JSONObject resJson = getForJSON(request, null);
+        JSONObject resJson;
+        if (isSingleApiServer) {
+            resJson = getForJSON(request, null);
+        } else {
+            resJson = getForJSON("/api/chat/geo", request, null);
+        }
         if (resJson != null && resJson.has("geo")) {
             JSONObject geo = resJson.getJSONObject("geo");
             if (geo.has("lat")) {
@@ -168,19 +285,12 @@ public class ChatApi extends SimpleHttpClient {
         return geoInfo;
     }
 
+    @Deprecated
     public String engineChat(String action, Map<String, String> data) throws IOException {
-        FormBody.Builder bodyBuilder = new FormBody.Builder()
-                .add("action", action)
-                .add("format", "json");
-        for (String entry : data.keySet()) {
-            bodyBuilder.add(entry, data.get(entry));
-        }
-        FormBody body = bodyBuilder.build();
-
-        String resStr = postForString(body);
-        return resStr;
+        return (new EngineChatApi(this.getServer())).engineChat(action, data);
     }
 
+    @Deprecated
     public JSONObject engineChatJson(String action, Map<String, String> data) throws IOException {
         String resStr = engineChat(action, data);
         JSONObject resJson = null;

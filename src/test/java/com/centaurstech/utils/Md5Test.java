@@ -8,6 +8,7 @@ import com.centaurstech.utils.encode.Md5;
  */
 public class Md5Test {
 
+    //md5加密入参
     @Test
     public void testMd5() throws Exception {
         Md5.digest("test");

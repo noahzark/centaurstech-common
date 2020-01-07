@@ -6,6 +6,8 @@ public class BasicAuthData {
     String username;
     String password;
 
+    public BasicAuthData() {}
+
     BasicAuthData(String data) {
         String[] result = StringExtractor.extractBasicAuth(data);
         username = result[0];
@@ -14,6 +16,13 @@ public class BasicAuthData {
         } else {
             password = "";
         }
+    }
+
+    public static BasicAuthData fromAuth(String username, String password) {
+        BasicAuthData basicAuthData = new BasicAuthData();
+        basicAuthData.username = username;
+        basicAuthData.password = password;
+        return basicAuthData;
     }
 
     public static BasicAuthData fromString(String data) {
@@ -32,6 +41,7 @@ public class BasicAuthData {
         return password;
     }
 
+    @Override
     public String toString() {
         return getUsername() + " " + getPassword();
     }

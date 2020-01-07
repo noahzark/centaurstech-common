@@ -296,6 +296,8 @@ public class DFAFilter {
         boolean flag = false;
         //匹配标识数默认为0
         int matchFlag = 0;
+        //标记最长匹配到结尾的子串长度
+        int maxMatchLen = 0;
         Character word;
         DFANode nowMap = sensitiveWordMapRoot;
         for (int i = beginIndex; i < txt.length(); i++) {
@@ -309,6 +311,8 @@ public class DFAFilter {
                 if (nowMap.isEnd) {
                     //结束标志位为true
                     flag = true;
+                    //记录最长匹配的长度
+                    maxMatchLen = matchFlag;
                     //最小规则，直接返回,最大规则还需继续查找
                     if (MinMatchTYpe == matchType) {
                         break;
@@ -317,15 +321,18 @@ public class DFAFilter {
             } else {//不存在，直接返回
                 break;
             }
+            //最长匹配限制
+            if (lengthCeiling != -1 && matchFlag > lengthCeiling) {
+                break;
+            }
         }
 
-        boolean lengthSuit = (lengthFloor == -1 || matchFlag > lengthFloor)
-                && (lengthCeiling == -1 || matchFlag < lengthCeiling);
+        boolean minLengthSuit = (lengthFloor == -1 || maxMatchLen > lengthFloor);
 
-        if (!flag || !lengthSuit) {
-            matchFlag = 0;
+        if (!flag || !minLengthSuit) {
+            return 0;
         }
-        return matchFlag;
+        return maxMatchLen;
     }
 
 }

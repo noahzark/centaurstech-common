@@ -20,6 +20,7 @@ public class EventTrackTest {
 
     static ConcurrentHashMap<EventTrack, Boolean> reports = new ConcurrentHashMap<>();
 
+    @Deprecated
     public FutureTask<Void> buildFutureTask(EventTrackServiceHashSet eventSendSet) {
         return new FutureTask(() -> {
             int times = 0;
@@ -31,6 +32,7 @@ public class EventTrackTest {
     }
 
     @Test
+    //线程测试哈希集合模块
     public void testHashSetMode() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("HashSet Mode");
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(
@@ -41,7 +43,7 @@ public class EventTrackTest {
 
         ArrayList<FutureTask<Void>> tasks = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             FutureTask<Void> futureTask = buildFutureTask(eventSendSet);
             tasks.add(futureTask);
             tpe.submit(futureTask);
@@ -67,6 +69,7 @@ public class EventTrackTest {
     }
 
     @Test
+    //线程测试阻塞队列模块
     public void testBlockingQueueMode() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("ArrayBlockingQueue Mode");
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(
@@ -77,7 +80,7 @@ public class EventTrackTest {
 
         ArrayList<FutureTask<Boolean>> tasks = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             FutureTask<Boolean> futureTask = buildFutureTask(eventSendSet);
             tasks.add(futureTask);
             tpe.submit(futureTask);
@@ -92,6 +95,7 @@ public class EventTrackTest {
         reports.clear();
     }
 
+    @Deprecated
     class EventTrackServiceHashSet extends EventTrackProxy {
         public EventTrackServiceHashSet() {
             super((eventTracks) -> {
