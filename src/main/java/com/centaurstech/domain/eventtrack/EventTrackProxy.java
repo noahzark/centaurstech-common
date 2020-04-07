@@ -1,9 +1,7 @@
 package com.centaurstech.domain.eventtrack;
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 /**
  * Event track proxy
@@ -50,9 +48,9 @@ public class EventTrackProxy {
 
         this.buffMode = buffMode;
         if (buffMode == BuffMode.HASH_SET) {
-            eventTrackSet = new HashSet<>(DEFAULT_STORAGE_SIZE);
+            eventTrackSet = new HashSet<>(reportSize);
         } else {
-            eventTrackQueue = new LinkedBlockingQueue<>(DEFAULT_STORAGE_SIZE);
+            eventTrackQueue = new LinkedBlockingQueue<>(reportSize * 2);
         }
     }
 
@@ -210,27 +208,43 @@ public class EventTrackProxy {
         }
     }
 
-    private void checkTrackQueue(int needReportSize) {
-        if (eventTrackQueue.size() > needReportSize) {
-            HashSet<EventTrack> eventSendSet = new HashSet<>(needReportSize * 2);
-            while(eventTrackQueue.size() > needReportSize / 2) {
-                eventSendSet.add(eventTrackQueue.poll());
-            }
-            Runnable runnable = () -> eventTrackSender.sendEventsToServer(eventSendSet);
-            cachePool.execute(runnable);
-            lastFlush = Calendar.getInstance().getTime();
+    public void forceFlushAsync(int needReportSize) throws ExecutionException, InterruptedException {
+        Future<Void> flushResult;
+        if (buffMode == BuffMode.LINKED_BLOCKING_QUEUE) {
+            flushResult = checkTrackQueue(needReportSize);
+        } else {
+            flushResult = checkTrackSet(needReportSize);
+        }
+        if (flushResult != null) {
+            flushResult.get();
         }
     }
 
-    private HashSet<EventTrack> checkTrackSet(int needReportSize) {
+    private Future<Void> checkTrackQueue(int needReportSize) {
+        if (eventTrackQueue.size() > needReportSize) {
+            HashSet<EventTrack> eventSendSet = new HashSet<>(eventTrackQueue.size());
+            // while(eventTrackQueue.size() > needReportSize / 2) eventSendSet.add(eventTrackQueue.poll());
+            eventTrackQueue.drainTo(eventSendSet);
+            Runnable runnable = () -> eventTrackSender.sendEventsToServer(eventSendSet);
+            FutureTask task = new FutureTask<Void>(runnable, null);
+            cachePool.execute(task);
+            lastFlush = Calendar.getInstance().getTime();
+            return task;
+        }
+        return null;
+    }
+
+    private Future<Void> checkTrackSet(int needReportSize) {
         if (eventTrackSet.size() >= needReportSize) {
             HashSet<EventTrack> temp = new HashSet<>(eventTrackSet);
             Runnable runnable = () -> eventTrackSender.sendEventsToServer(temp);
-            cachePool.execute(runnable);
+            FutureTask task = new FutureTask<Void>(runnable, null);
+            cachePool.execute(task);
             eventTrackSet.clear();
             lastFlush = Calendar.getInstance().getTime();
+            return task;
         }
-        return eventTrackSet;
+        return null;
     }
 
     public interface EventTrackSender {
