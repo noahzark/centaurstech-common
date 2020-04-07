@@ -18,13 +18,16 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class EventTrackTest {
 
+    public static int TASK_COUNT = 100;
+    public static int EVENT_PER_TASK = 10000;
+
     static ConcurrentHashMap<EventTrack, Boolean> reports = new ConcurrentHashMap<>();
 
     @Deprecated
     public FutureTask<Void> buildFutureTask(EventTrackServiceHashSet eventSendSet) {
-        return new FutureTask(() -> {
+        return new FutureTask<>(() -> {
             int times = 0;
-            while (++times <= 1000) {
+            while (++times <= EVENT_PER_TASK) {
                 eventSendSet.addBotActivationEvent("10086", SMART_LIFE_APP, UNKNOWN);
             }
             return null;
@@ -34,34 +37,35 @@ public class EventTrackTest {
     @Test
     //线程测试哈希集合模块
     public void testHashSetMode() throws Exception {
-        EngineQuery engineQuery = new EngineQueryProxy("HashSet Mode");
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(
-                100, 1000,
+                Runtime.getRuntime().availableProcessors(), TASK_COUNT,
                 100, MILLISECONDS,
                 new ArrayBlockingQueue<>(100));
         EventTrackServiceHashSet eventSendSet = new EventTrackServiceHashSet();
 
         ArrayList<FutureTask<Void>> tasks = new ArrayList<>();
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TASK_COUNT; i++) {
             FutureTask<Void> futureTask = buildFutureTask(eventSendSet);
             tasks.add(futureTask);
             tpe.submit(futureTask);
         }
+
+        EngineQuery engineQuery = new EngineQueryProxy("HashSet Mode");
         for (FutureTask<Void> task : tasks) {
             task.get();
         }
-        eventSendSet.forceFlush(0);
-
         System.out.println(engineQuery.getQueryTimeString());
+
+        eventSendSet.forceFlushAsync(0);
         System.out.println(reports.size());
         reports.clear();
     }
 
     public FutureTask<Boolean> buildFutureTask(EventTrackServiceBlockingQueue eventSendSet) {
-        return new FutureTask(() -> {
+        return new FutureTask<>(() -> {
             int times = 0;
-            while (++times <= 1000) {
+            while (++times <= EVENT_PER_TASK) {
                 eventSendSet.addBotActivationEvent("10086", SMART_LIFE_APP, UNKNOWN);
             }
             return true;
@@ -71,48 +75,49 @@ public class EventTrackTest {
     @Test
     //线程测试阻塞队列模块
     public void testBlockingQueueMode() throws Exception {
-        EngineQuery engineQuery = new EngineQueryProxy("ArrayBlockingQueue Mode");
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(
-                100, 1000,
+                Runtime.getRuntime().availableProcessors(), TASK_COUNT,
                 100, MILLISECONDS,
                 new ArrayBlockingQueue<>(100));
         EventTrackServiceBlockingQueue eventSendSet = new EventTrackServiceBlockingQueue();
 
         ArrayList<FutureTask<Boolean>> tasks = new ArrayList<>();
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TASK_COUNT; i++) {
             FutureTask<Boolean> futureTask = buildFutureTask(eventSendSet);
             tasks.add(futureTask);
             tpe.submit(futureTask);
         }
+
+        EngineQuery engineQuery = new EngineQueryProxy("ArrayBlockingQueue Mode");
         for (FutureTask<Boolean> task : tasks) {
             task.get();
         }
-        eventSendSet.forceFlush(0);
-
         System.out.println(engineQuery.getQueryTimeString());
+
+        eventSendSet.forceFlushAsync(0);
         System.out.println(reports.size());
         reports.clear();
     }
 
     @Deprecated
     class EventTrackServiceHashSet extends EventTrackProxy {
-        public EventTrackServiceHashSet() {
+        EventTrackServiceHashSet() {
             super((eventTracks) -> {
                 for (EventTrack eventTrack : eventTracks) {
                     reports.put(eventTrack, false);
                 }
-            }, "Test", 100, HASH_SET);
+            }, "Test", 10000, HASH_SET);
         }
     }
 
     class EventTrackServiceBlockingQueue extends EventTrackProxy {
-        public EventTrackServiceBlockingQueue() {
+        EventTrackServiceBlockingQueue() {
             super((eventTracks) -> {
                 for (EventTrack eventTrack : eventTracks) {
                     reports.put(eventTrack, false);
                 }
-            }, "Test", 100, LINKED_BLOCKING_QUEUE);
+            }, "Test", 10000, LINKED_BLOCKING_QUEUE);
         }
     }
 
