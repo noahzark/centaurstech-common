@@ -1,7 +1,7 @@
 package com.centaurstech.domain.eventtrack;
 
 import java.util.*;
-import java.util.concurrent.*;
+
 
 /**
  * Event track proxy
@@ -21,17 +21,11 @@ public class EventTrackProxy {
 
     public static final int DEFAULT_STORAGE_SIZE = 10000;
 
-    EventTrackSender eventTrackSender;
+    EventTrackHandler eventTrackHandler;
+
     String origin;
-    int reportSize;
 
     BuffMode buffMode;
-
-    Date lastFlush;
-
-    private HashSet<EventTrack> eventTrackSet;
-    private LinkedBlockingQueue<EventTrack> eventTrackQueue;
-    private ExecutorService cachePool = Executors.newCachedThreadPool();
 
     public EventTrackProxy(EventTrackSender eventTrackSender, String origin) {
         this(eventTrackSender, origin, DEFAULT_STORAGE_SIZE);
@@ -42,15 +36,13 @@ public class EventTrackProxy {
     }
 
     public EventTrackProxy(EventTrackSender eventTrackSender, String origin, int reportSize, BuffMode buffMode) {
-        this.eventTrackSender = eventTrackSender;
         this.origin = origin;
-        this.reportSize = reportSize;
 
         this.buffMode = buffMode;
         if (buffMode == BuffMode.HASH_SET) {
-            eventTrackSet = new HashSet<>(reportSize);
+            eventTrackHandler = new EventTrackSetHandler(eventTrackSender, reportSize);
         } else {
-            eventTrackQueue = new LinkedBlockingQueue<>(reportSize * 2);
+            eventTrackHandler = new EventTrackQueueHandler(eventTrackSender, reportSize);
         }
     }
 
@@ -70,7 +62,7 @@ public class EventTrackProxy {
             fields.put(EventTrackItem.FieldKey.PERMISSION.value, permissionType.toString());
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.USER_BEHAVIOR, fields);
         eventTrack.setOrigin(origin);
-        this.submitTask(eventTrack);
+        this.eventTrackHandler.submitTask(eventTrack);
         return "SUCCESS";
     }
 
@@ -86,7 +78,7 @@ public class EventTrackProxy {
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.BOT_ACTIVATION, fields);
         eventTrack.setPlatform(platform == null ? null : platform.toString());
         eventTrack.setOrigin(origin);
-        this.submitTask(eventTrack);
+        this.eventTrackHandler.submitTask(eventTrack);
         return "SUCCESS";
     }
 
@@ -104,7 +96,7 @@ public class EventTrackProxy {
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.BOT_EXCEPTION, fields);
         eventTrack.setPlatform(platform == null ? null : platform.toString());
         eventTrack.setOrigin(origin);
-        this.submitTask(eventTrack);
+        this.eventTrackHandler.submitTask(eventTrack);
         return "SUCCESS";
     }
 
@@ -126,7 +118,7 @@ public class EventTrackProxy {
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.BOT_SESSION, fields);
         eventTrack.setPlatform(platform == null ? null : platform.toString());
         eventTrack.setOrigin(origin);
-        this.submitTask(eventTrack);
+        this.eventTrackHandler.submitTask(eventTrack);
         return "SUCCESS";
     }
 
@@ -150,7 +142,7 @@ public class EventTrackProxy {
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.BOT_SESSION, fields);
         eventTrack.setPlatform(platform == null ? null : platform.toString());
         eventTrack.setOrigin(origin);
-        this.submitTask(eventTrack);
+        this.eventTrackHandler.submitTask(eventTrack);
         return "SUCCESS";
     }
 
@@ -172,7 +164,7 @@ public class EventTrackProxy {
         EventTrack eventTrack = generateEventTrack(uid, EventTrackItem.ReportType.SERVICE_DATA, fields);
         eventTrack.setPlatform(platform == null ? null : platform.toString());
         eventTrack.setOrigin(origin);
-        this.submitTask(eventTrack);
+        this.eventTrackHandler.submitTask(eventTrack);
         return "SUCCESS";
     }
 
@@ -188,65 +180,6 @@ public class EventTrackProxy {
         return eventTrack;
     }
 
-    public void submitTask(EventTrack eventTrack) {
-        if (buffMode == BuffMode.LINKED_BLOCKING_QUEUE) {
-            checkTrackQueue(reportSize);
-            eventTrackQueue.add(eventTrack);
-        } else {
-            synchronized (eventTrackSet) {
-                checkTrackSet(reportSize);
-                eventTrackSet.add(eventTrack);
-            }
-        }
-    }
-
-    public void forceFlush(int needReportSize) {
-        if (buffMode == BuffMode.LINKED_BLOCKING_QUEUE) {
-            checkTrackQueue(needReportSize);
-        } else {
-            checkTrackSet(needReportSize);
-        }
-    }
-
-    public void forceFlushAsync(int needReportSize) throws ExecutionException, InterruptedException {
-        Future<Void> flushResult;
-        if (buffMode == BuffMode.LINKED_BLOCKING_QUEUE) {
-            flushResult = checkTrackQueue(needReportSize);
-        } else {
-            flushResult = checkTrackSet(needReportSize);
-        }
-        if (flushResult != null) {
-            flushResult.get();
-        }
-    }
-
-    private Future<Void> checkTrackQueue(int needReportSize) {
-        if (eventTrackQueue.size() > needReportSize) {
-            HashSet<EventTrack> eventSendSet = new HashSet<>(eventTrackQueue.size());
-            // while(eventTrackQueue.size() > needReportSize / 2) eventSendSet.add(eventTrackQueue.poll());
-            eventTrackQueue.drainTo(eventSendSet);
-            Runnable runnable = () -> eventTrackSender.sendEventsToServer(eventSendSet);
-            FutureTask task = new FutureTask<Void>(runnable, null);
-            cachePool.execute(task);
-            lastFlush = Calendar.getInstance().getTime();
-            return task;
-        }
-        return null;
-    }
-
-    private Future<Void> checkTrackSet(int needReportSize) {
-        if (eventTrackSet.size() >= needReportSize) {
-            HashSet<EventTrack> temp = new HashSet<>(eventTrackSet);
-            Runnable runnable = () -> eventTrackSender.sendEventsToServer(temp);
-            FutureTask task = new FutureTask<Void>(runnable, null);
-            cachePool.execute(task);
-            eventTrackSet.clear();
-            lastFlush = Calendar.getInstance().getTime();
-            return task;
-        }
-        return null;
-    }
-
     public interface EventTrackSender {
         void sendEventsToServer(Set<EventTrack> eventTracks);
     }
@@ -255,8 +188,12 @@ public class EventTrackProxy {
         return buffMode;
     }
 
+    public EventTrackHandler getEventTrackHandler() {
+        return eventTrackHandler;
+    }
+
     public Date getLastFlush() {
-        return lastFlush;
+        return eventTrackHandler.lastFlush;
     }
 
 }
