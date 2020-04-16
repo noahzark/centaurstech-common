@@ -66,6 +66,23 @@ public class ChatApiTest {
     }
 
     @Test
+    //测试向对话接口发送Push数据
+    public void testPushData() throws Exception {
+        EngineQuery engineQuery = new EngineQueryProxy("/api/data/push");
+
+        ChatApi chatApi = new ChatApi("http://localhost:18001");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("hello", "world");
+
+        String SERVER_SALT = " QUERY_RESULT_SALT";
+        String message = chatApi.pushData("qiwurobot", "123456","HELLO","TestService", SERVER_SALT);
+        assertThat(message, is("success"));
+        System.out.println(message);
+
+        System.out.println(engineQuery.getQueryTimeString());
+    }
+
+    @Test
     //测试请求对话接口后，并将接口返回的数据变成Json的格式
     public void testGetJson() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/api/chat/data");
