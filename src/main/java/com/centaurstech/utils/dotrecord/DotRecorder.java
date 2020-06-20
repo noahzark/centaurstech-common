@@ -17,6 +17,9 @@ public class DotRecorder {
     public long lastDotTime;
     public long recordStart;
 
+    public DotRecorder() {
+    }
+
     private static final ThreadLocal<Map<String, DotRecorder>> DOT_THREAD_LOCAL = new ThreadLocal<>();
 
     /**

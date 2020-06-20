@@ -291,6 +291,37 @@ public class ChatApi extends SimpleHttpClient {
         return geoInfo;
     }
 
+    public String pushData(String appkey, String uid, String msg, String service, String serverSalt) throws IOException {
+        return this.pushData(appkey, uid, msg, service, null, serverSalt);
+    }
+
+    public String pushData(String appkey, String uid, String msg, String service, JSONObject data, String serverSalt) throws IOException {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String time = Long.toString(timestamp.getTime());
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("timestamp", time);
+        jsonObject.put("secret", Md5.digest(time + serverSalt));
+
+        jsonObject.put("appkey", appkey);
+        jsonObject.put("uid", uid);
+        jsonObject.put("msg", msg);
+        jsonObject.put("service", service);
+        if (data != null) {
+            jsonObject.put("data", data);
+        }
+
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+
+        JSONObject resJson = postForJSON("/api/data/push", body);
+
+        if (resJson != null && resJson.has("msg")) {
+            return resJson.getString("msg");
+        }
+
+        return null;
+    }
+
     @Deprecated
     public String engineChat(String action, Map<String, String> data) throws IOException {
         return (new EngineChatApi(this.getServer())).engineChat(action, data);
