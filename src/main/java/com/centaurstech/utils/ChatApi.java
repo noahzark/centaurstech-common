@@ -1,6 +1,7 @@
 package com.centaurstech.utils;
 
 import com.centaurstech.domain.ChatApp;
+import com.centaurstech.domain.ChatParameter;
 import com.centaurstech.domain.GPSLocation;
 import com.centaurstech.utils.encode.Md5;
 import com.centaurstech.utils.http.RequestBodyUtil;
@@ -18,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -73,32 +73,38 @@ public class ChatApi extends SimpleHttpClient {
     }
 
     public JSONObject chat(String appkey, String appsecret,
-                                       String uid, String nickname, String ask, boolean newSession,
+                           String uid, String nickname, String ask, boolean newSession,
                            Map<String, String> headers) throws IOException {
+        ChatParameter chatParameter = new ChatParameter(appkey, appsecret, uid, ask);
+        chatParameter.setNickname(nickname)
+                .setNewSession(newSession)
+                .setHeaders(headers);
+        return chat(chatParameter);
+    }
+
+    public JSONObject chat(ChatParameter chatParameter) throws IOException {
         // Prepare verify string
         String now = String.valueOf(TimeCalculator.nowInMillis());
-        String verify = Md5.digest(appsecret + uid + now);
 
-        // Generate request body
-        FormBody body = new FormBody.Builder()
-                .add("appkey", appkey)
-                .add("uid", uid)
-                .add("timestamp",now)
-                .add("verify", verify)
-                .add("nickname", nickname)
-                .add("msg", ask)
-                .add("new_session", String.valueOf(newSession))
-                .build();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("appkey", chatParameter.getChatApp().getAppkey());
+        jsonObject.put("uid", chatParameter.getUid());
+        jsonObject.put("timestamp",now);
+        jsonObject.put("verify", chatParameter.calVerify(now));
+        jsonObject.put("nickname", chatParameter.getNickname());
+        jsonObject.put("msg", chatParameter.getAsk());
+        jsonObject.put("new_session", String.valueOf(chatParameter.isNewSession()));
+
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
         String res;
         if (isSingleApiServer) {
-            res = postForString(body, headers, null);
+            res = postForString(body, chatParameter.getHeaders(), null);
         } else {
-            res = postForString("/api/chat", headers, body, null);
+            res = postForString("/api/chat", chatParameter.getHeaders(), body, null);
         }
 
-        JSONObject result = new JSONObject(res);
-        return result;
+        return new JSONObject(res);
     }
 
     public JSONObject voiceChat(ChatApp chatApp, String uid, String nickname, File file, String fileMime) throws IOException {
