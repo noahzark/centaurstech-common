@@ -94,6 +94,7 @@ public class ChatApi extends SimpleHttpClient {
         jsonObject.put("nickname", chatParameter.getNickname());
         jsonObject.put("msg", chatParameter.getAsk());
         jsonObject.put("new_session", String.valueOf(chatParameter.isNewSession()));
+        jsonObject.put("extra_info", chatParameter.getExtraInfo());
 
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
