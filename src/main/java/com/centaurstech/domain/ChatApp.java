@@ -33,4 +33,8 @@ public class ChatApp {
         this.appsecret = appsecret;
     }
 
+    public String calVerify(String uid, String now) {
+        return Md5.digest(appsecret + uid + now);
+    }
+
 }
