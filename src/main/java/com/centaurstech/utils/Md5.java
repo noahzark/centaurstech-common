@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@Deprecated
 public final class Md5 {
 
 	public static String digest(String plaintext) {

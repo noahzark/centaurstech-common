@@ -13,6 +13,9 @@ import java.util.Set;
  */
 public class TxtFileReader {
 
+    public static final String UTF8_BOM = "\uFEFF";
+    // TODO: Remove BOM
+
     /**
      * Read a txt file into a set
      * @param file
@@ -25,6 +28,18 @@ public class TxtFileReader {
         List<String> docs = Files.readAllLines(path);
         set.addAll(docs);
         return set;
+    }
+
+    /**
+     * Read a txt file into a list
+     * @param list
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public static List<String> readList(List<String> list, String file) throws IOException {
+        Path path = Paths.get(file);
+        return Files.readAllLines(path);
     }
 
     /**

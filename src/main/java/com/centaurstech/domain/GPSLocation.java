@@ -8,6 +8,15 @@ public class GPSLocation {
     Double lat;
     Double lng;
 
+    public GPSLocation() {
+        this(0.0, 0.0);
+    }
+    
+    public GPSLocation(Integer lat, Integer lng) {
+        this.lat = lat.doubleValue();
+        this.lng = lng.doubleValue();
+    }
+
     public GPSLocation(Double lat, Double lng) {
         this.lat = lat;
         this.lng = lng;
@@ -28,4 +37,13 @@ public class GPSLocation {
     public void setLng(Double lng) {
         this.lng = lng;
     }
+
+    public String toString() {
+        return lat + ","+ lng;
+    }
+
+    public String toGaodeString() {
+        return lng + "," + lat;
+    }
+
 }

@@ -8,7 +8,10 @@ import java.util.Date;
 
 /**
  * Created by Feliciano on 2/7/2018.
+ * @deprecated Use time.TimeCalculator / time.DatePeriod instead
  */
+@Deprecated
+// warning: "Use time.TimeCalculator / time.DatePeriod instead"
 public class TimeCalculator {
 
     public enum Period {
@@ -19,6 +22,10 @@ public class TimeCalculator {
 
     public static long nowInMillis() {
         return Calendar.getInstance().getTimeInMillis();
+    }
+
+    public static long nowInSeconds() {
+        return Calendar.getInstance().getTimeInMillis() / 1000L;
     }
 
     public static Date beginOfToday(){
