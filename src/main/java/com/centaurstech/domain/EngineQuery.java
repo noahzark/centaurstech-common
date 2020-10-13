@@ -1,5 +1,6 @@
 package com.centaurstech.domain;
 
+import com.centaurstech.utils.CommonUtils;
 import com.centaurstech.utils.time.TimeCalculator;
 
 import java.util.Map;
@@ -7,17 +8,28 @@ import java.util.Map;
 /**
  * Engine query form super class
  * Created by Feliciano on 7/5/2017.
+ *
  * @author Feliciano.Long
  */
 public abstract class EngineQuery {
 
     public static String CHAT_KEY_SPLITTER = "@@@";
     public static String EXTRA_DATA_SPLITTER = "###";
+    private static String UID_KEY = "uid";
+    private static String CHANNELID_KEY = "channelId";
+    private static String CHAT_KEY = "chat_key";
+    private static String CHAT_KEY_NEW_PLATFORM = "chatKey";
+
 
     /**
      * Session chat key
      */
     String chatKey;
+
+    /**
+     * session chat key for new platform, unused
+     */
+    String chatKeyNew;
 
     /**
      * Appended extra data in chat key
@@ -37,7 +49,7 @@ public abstract class EngineQuery {
     /**
      * Engine query request params
      */
-    Map<String,String> requestParams;
+    Map<String, String> requestParams;
 
     public EngineQuery() {
         beginTime = TimeCalculator.nowInMillis();
@@ -57,12 +69,38 @@ public abstract class EngineQuery {
         }
     }
 
-    public EngineQuery(Map<String,String> requestParams) {
-        this(requestParams.get("chat_key"));
+    /**
+     * 新平台用
+     *
+     * @param uid
+     * @param appkey
+     * @param chatKey 暂时备用
+     */
+    public EngineQuery(String uid, String appkey, String chatKey) {
+        if (CommonUtils.stringNotEmptyOrNull(uid)) {
+            this.chatKey = uid;
+        }
+        if (CommonUtils.stringNotEmptyOrNull(appkey)) {
+            this.extra = appkey;
+        }
+        if (CommonUtils.stringNotEmptyOrNull(chatKey)) {
+            this.chatKeyNew = chatKey;
+            if (CommonUtils.stringIsEmptyOrNull(this.chatKey)) {
+                this.chatKey = chatKey;
+            }
+        }
     }
 
-    public EngineQuery(Map<String,String> requestParams, boolean keepRequestParams) {
-        this(requestParams.get("chat_key"));
+    public EngineQuery(FormRequest formRequest) {
+        this(formRequest.getUid(),formRequest.getChannelId(),formRequest.getChatKey());
+    }
+
+    public EngineQuery(Map<String, String> requestParams) {
+        this(requestParams.get(CHAT_KEY));
+    }
+
+    public EngineQuery(Map<String, String> requestParams, boolean keepRequestParams) {
+        this(requestParams);
         if (keepRequestParams) {
             this.requestParams = requestParams;
         }
@@ -94,11 +132,12 @@ public abstract class EngineQuery {
 
     /**
      * Check if engine form has a valuable key
+     *
      * @param requestParams
      * @param key
      * @return
      */
-    public static Boolean hasValue(Map<String,String> requestParams, String key) {
+    public static Boolean hasValue(Map<String, String> requestParams, String key) {
         String result = requestParams.getOrDefault(key, null);
         if (result != null && !result.isEmpty()) {
             return true;
@@ -115,6 +154,7 @@ public abstract class EngineQuery {
 
     /**
      * Get a value using a series of keys from engine form
+     *
      * @param requestParams
      * @param keys
      * @return
@@ -137,6 +177,7 @@ public abstract class EngineQuery {
 
     /**
      * Get a integer value using a key from engine form
+     *
      * @param requestParams
      * @param key
      * @return
