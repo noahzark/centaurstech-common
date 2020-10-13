@@ -69,14 +69,7 @@ public abstract class EngineQuery {
         }
     }
 
-    /**
-     * 新平台用
-     *
-     * @param uid
-     * @param appkey
-     * @param chatKey 暂时备用
-     */
-    public EngineQuery(String uid, String appkey, String chatKey) {
+    public void fillKeyMsg(String uid, String appkey, String chatKey) {
         if (CommonUtils.stringNotEmptyOrNull(uid)) {
             this.chatKey = uid;
         }
@@ -89,6 +82,17 @@ public abstract class EngineQuery {
                 this.chatKey = chatKey;
             }
         }
+    }
+
+    /**
+     * 新平台用
+     *
+     * @param uid
+     * @param appkey
+     * @param chatKey 暂时备用
+     */
+    public EngineQuery(String uid, String appkey, String chatKey) {
+        fillKeyMsg(uid,appkey,chatKey);
     }
 
     public EngineQuery(FormRequest formRequest) {
