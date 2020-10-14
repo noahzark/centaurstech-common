@@ -40,6 +40,14 @@ public class FormResponse {
             this.vars = vars;
             this.groupVars = groupVars;
         }
+
+        @Override
+        public String toString() {
+            return "FormData{" +
+                    "vars=" + vars +
+                    ", groupVars=" + groupVars +
+                    '}';
+        }
     }
 
     private Integer code;
@@ -79,5 +87,14 @@ public class FormResponse {
 
     public void setData(FormData data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "FormResponse{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                '}';
     }
 }
