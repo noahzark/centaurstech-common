@@ -1,9 +1,11 @@
 package com.centaurstech.domain;
 
+import java.io.Serializable;
+
 /**
  * Created by Feliciano on 7/11/2018.
  */
-public class GPSLocation {
+public class GPSLocation implements Serializable {
 
     Double lat;
     Double lng;
