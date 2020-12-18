@@ -47,31 +47,107 @@ public class ChatApi extends SimpleHttpClient {
         super(server, readTimeout);
     }
 
+    /**
+     * Call chat in old style
+     *
+     * @param chatApp
+     * @param uid
+     * @param nickname
+     * @param ask
+     * @return
+     * @throws IOException
+     * @deprecated use {@link #chat(ChatParameter)} instead.
+     */
+    @Deprecated
     public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask) throws IOException {
         return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
                                 uid, nickname, ask);
     }
 
+    /**
+     *
+     * @param chatApp
+     * @param uid
+     * @param nickname
+     * @param ask
+     * @param newSession
+     * @return
+     * @throws IOException
+     * @deprecated use {@link #chat(ChatParameter)} instead.
+     */
+    @Deprecated
     public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask, boolean newSession) throws IOException {
         return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
                 uid, nickname, ask, newSession);
     }
 
+    /**
+     *
+     * @param chatApp
+     * @param uid
+     * @param nickname
+     * @param ask
+     * @param newSession
+     * @param headers
+     * @return
+     * @throws IOException
+     * @deprecated use {@link #chat(ChatParameter)} instead.
+     */
+    @Deprecated
     public JSONObject chat(ChatApp chatApp, String uid, String nickname, String ask, boolean newSession, Map<String, String> headers) throws IOException {
         return this.chat(chatApp.getAppkey(), chatApp.getAppsecret(),
                 uid, nickname, ask, newSession, headers);
     }
 
+    /**
+     *
+     * @param appkey
+     * @param appsecret
+     * @param uid
+     * @param nickname
+     * @param ask
+     * @return
+     * @throws IOException
+     * @deprecated use {@link #chat(ChatParameter)} instead.
+     */
+    @Deprecated
     public JSONObject chat(String appkey, String appsecret,
                            String uid, String nickname, String ask) throws IOException {
         return chat(appkey, appsecret, uid, nickname, ask, false);
     }
 
+    /**
+     *
+     * @param appkey
+     * @param appsecret
+     * @param uid
+     * @param nickname
+     * @param ask
+     * @param newSession
+     * @return
+     * @throws IOException
+     * @deprecated use {@link #chat(ChatParameter)} instead.
+     */
+    @Deprecated
     public JSONObject chat(String appkey, String appsecret,
                            String uid, String nickname, String ask, boolean newSession) throws IOException {
         return chat(appkey, appsecret, uid, nickname, ask, newSession, new HashMap<>());
     }
 
+    /**
+     *
+     * @param appkey
+     * @param appsecret
+     * @param uid
+     * @param nickname
+     * @param ask
+     * @param newSession
+     * @param headers
+     * @return
+     * @throws IOException
+     * @deprecated use {@link #chat(ChatParameter)} instead.
+     */
+    @Deprecated
     public JSONObject chat(String appkey, String appsecret,
                            String uid, String nickname, String ask, boolean newSession,
                            Map<String, String> headers) throws IOException {
@@ -82,6 +158,12 @@ public class ChatApi extends SimpleHttpClient {
         return chat(chatParameter);
     }
 
+    /**
+     * Call chat api
+     * @param chatParameter
+     * @return
+     * @throws IOException
+     */
     public JSONObject chat(ChatParameter chatParameter) throws IOException {
         // Prepare verify string
         String now = String.valueOf(TimeCalculator.nowInMillis());
@@ -95,6 +177,10 @@ public class ChatApi extends SimpleHttpClient {
         jsonObject.put("msg", chatParameter.getAsk());
         jsonObject.put("new_session", String.valueOf(chatParameter.isNewSession()));
         jsonObject.put("extra_info", chatParameter.getExtraInfo());
+        if (chatParameter.getGeo() != null) {
+            jsonObject.put("geo[lat]", chatParameter.getGeo().getLat());
+            jsonObject.put("geo[lng]", chatParameter.getGeo().getLng());
+        }
 
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 

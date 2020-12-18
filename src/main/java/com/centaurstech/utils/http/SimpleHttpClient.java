@@ -24,12 +24,11 @@ public class SimpleHttpClient extends BaseHttpClient {
 
     public SimpleHttpClient(String server, long readTimeout) {
         super(server, readTimeout);
-        isSingleApiServer = StringExtractor.countOccurences(server, '/') > 2;
+        isSingleApiServer = StringExtractor.countOccurences(this.server, '/') > 2;
     }
 
     public SimpleHttpClient(String server) {
-        super(server, 30);
-        isSingleApiServer = StringExtractor.countOccurences(server, '/') > 2;
+        this(server, 30);
     }
 
     @Deprecated
