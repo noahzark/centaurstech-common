@@ -13,4 +13,6 @@ public interface IApiResult {
 
     String getPayload();
 
+    default Integer getEncrypt() { return 0; }
+
 }
