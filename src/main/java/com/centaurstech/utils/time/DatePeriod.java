@@ -32,6 +32,7 @@ public enum DatePeriod implements ComparablePeriod {
 //        Date date = cal.getTime();
 //        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 //        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        //这个和beginOfDay的相互调用不会有问题吗？
         return beginOfDay(0);
     }
 

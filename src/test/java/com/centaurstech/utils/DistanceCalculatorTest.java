@@ -12,6 +12,7 @@ public class DistanceCalculatorTest {
 
 
     @Test
+    //计算两地之间的距离(单位：KM)
     public void testDistance() throws Exception {
         double fromSanyaToWuhan = DistanceCalculator.distanceBetweenInKM(18.25d,109.5d,  30.6d, 114.3d);
         System.out.println("From Sanya to Wuhan: " + fromSanyaToWuhan * 1000);
