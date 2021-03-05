@@ -40,9 +40,10 @@ public class EmailClient implements IEmailClient {
 
     @Override
     public boolean send(String to, String title, String content) {
-
+        return send(to, title, content, null);
     }
 
+    @Override
     public boolean send(String to, String title, String content, List<File> files) {
         //String from = "server@centaurstech.com";//change accordingly
         //String host = "smtp.exmail.qq.com";//or IP address
