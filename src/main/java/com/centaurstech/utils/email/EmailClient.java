@@ -1,7 +1,10 @@
 package com.centaurstech.utils.email;
 import com.sun.mail.util.MailSSLSocketFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -35,7 +38,12 @@ public class EmailClient implements IEmailClient {
         }
     }
 
+    @Override
     public boolean send(String to, String title, String content) {
+
+    }
+
+    public boolean send(String to, String title, String content, List<File> files) {
         //String from = "server@centaurstech.com";//change accordingly
         //String host = "smtp.exmail.qq.com";//or IP address
 
@@ -70,11 +78,25 @@ public class EmailClient implements IEmailClient {
             message.setFrom(new InternetAddress(from));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
             message.setSubject(title);
+
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(content);
             message.setText(content);
+
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            if (files != null) {
+                MimeBodyPart attachmentPart = new MimeBodyPart();
+                for (File file : files) {
+                    attachmentPart.attachFile(file);
+                }
+                multipart.addBodyPart(attachmentPart);
+            }
+            message.setContent(multipart);
 
             // Send message
             Transport.send(message);
-        }catch (MessagingException mex) {
+        }catch (MessagingException | IOException mex) {
             mex.printStackTrace();
             return false;
         }
