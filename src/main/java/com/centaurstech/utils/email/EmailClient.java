@@ -101,8 +101,7 @@ public class EmailClient implements IEmailClient {
 
             // set content
             BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText(content);
-            message.setText(content);
+            messageBodyPart.setContent(content, "text/html;charset=UTF-8");
 
             // add multi part
             Multipart multipart = new MimeMultipart();
