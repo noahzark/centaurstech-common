@@ -1,4 +1,5 @@
 package com.centaurstech.utils.email;
+
 import com.sun.mail.util.MailSSLSocketFactory;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import javax.mail.internet.*;
 
 /**
  * Created by Feliciano on 11/22/2017.
- *
+ * <p>
  * Refactored by Feliciano Long on 09/17/2018
  */
 public class EmailClient implements IEmailClient {
@@ -44,7 +45,17 @@ public class EmailClient implements IEmailClient {
     }
 
     @Override
+    public boolean send(List<String> to, String title, String content) {
+        return send(to, title, content, null);
+    }
+
+    @Override
     public boolean send(String to, String title, String content, List<File> files) {
+        return send(List.of(to), title, content, files);
+    }
+
+    @Override
+    public boolean send(List<String> to, String title, String content, List<File> files) {
         //String from = "server@centaurstech.com";//change accordingly
         //String host = "smtp.exmail.qq.com";//or IP address
 
@@ -74,16 +85,26 @@ public class EmailClient implements IEmailClient {
         Session session = Session.getDefaultInstance(properties, emailClientAuthenticator);
 
         //compose the message
-        try{
+        try {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+
+            // add receptions
+            InternetAddress[] receptions = new InternetAddress[to.size()];
+            for (int i = 0; i < to.size(); i++) {
+                receptions[i] = new InternetAddress(to.get(i));
+            }
+            message.addRecipients(Message.RecipientType.TO, receptions);
+
+            // add subject
             message.setSubject(title);
 
+            // set content
             BodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setText(content);
             message.setText(content);
 
+            // add multi part
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(messageBodyPart);
             if (files != null) {
@@ -97,14 +118,14 @@ public class EmailClient implements IEmailClient {
 
             // Send message
             Transport.send(message);
-        }catch (MessagingException | IOException mex) {
+        } catch (MessagingException | IOException mex) {
             mex.printStackTrace();
             return false;
         }
         return true;
     }
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         EmailClient emailClient = new EmailClient(
                 "smtp.exmail.qq.com",
                 "server@centaurstech.com");
