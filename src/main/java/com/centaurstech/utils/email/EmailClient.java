@@ -5,6 +5,7 @@ import com.sun.mail.util.MailSSLSocketFactory;
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import javax.mail.*;
@@ -51,7 +52,8 @@ public class EmailClient implements IEmailClient {
 
     @Override
     public boolean send(String to, String title, String content, List<File> files) {
-        return send(List.of(to), title, content, files);
+        List<String> list = Arrays.asList(to.split(","));
+        return send(list, title, content, files);
     }
 
     @Override
