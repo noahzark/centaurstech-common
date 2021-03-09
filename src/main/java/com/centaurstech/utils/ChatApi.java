@@ -256,6 +256,24 @@ public class ChatApi extends SimpleHttpClient {
         return queries;
     }
 
+    public JSONObject proxyData(ChatApp chatApp, String uid, JSONObject json) throws IOException {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String time = Long.toString(timestamp.getTime());
+        String verify = Md5.digest(chatApp.getAppsecret() + uid + time);
+        json.put("timestamp", time);
+        json.put("uid", uid);
+        json.put("verify", verify);
+
+        RequestBody body = RequestBody.create(JSON, json.toString());
+        JSONObject res;
+        if (isSingleApiServer) {
+            res = postForJSON(body);
+        } else {
+            res = postForJSON("/api/data", body);
+        }
+        return res;
+    }
+
     public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt) throws IOException {
         return sendJson(queryResultType, jsonObject, serverSalt, 60);
     }
