@@ -263,6 +263,7 @@ public class ChatApi extends SimpleHttpClient {
         json.put("timestamp", time);
         json.put("uid", uid);
         json.put("verify", verify);
+        json.put("appkey", chatApp.getAppkey());
 
         RequestBody body = RequestBody.create(JSON, json.toString());
         JSONObject res;
