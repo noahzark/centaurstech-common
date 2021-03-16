@@ -21,10 +21,19 @@ public abstract class EngineQuery {
     private static String CHAT_KEY_NEW_PLATFORM = "chatKey";
 
 
+    
+    
+    /**
+     * Session chat key <br>
+     * @Deprecated use uid
+     */
+    @Deprecated
+    String chatKey;
+    
     /**
      * Session chat key
      */
-    String chatKey;
+    String uid;
 
     /**
      * session chat key for new platform, unused
@@ -57,17 +66,32 @@ public abstract class EngineQuery {
 
     public EngineQuery(String chat_key) {
         this();
-        chatKey = chat_key;
+        this.uid = getUidByChatkey(chat_key);
+        this.extra = getExtraByChatkey(chat_key);
+    }
+    
+    
+    public static String getExtraByChatkey(String chat_key) {
         if (chat_key.contains(CHAT_KEY_SPLITTER)) {
-            chatKey = chat_key.substring(0, chat_key.indexOf(CHAT_KEY_SPLITTER));
             if (chat_key.contains(EXTRA_DATA_SPLITTER)) {
-                String sub = chat_key.substring(chat_key.indexOf(CHAT_KEY_SPLITTER) + 3);
+                String sub = chat_key.substring(chat_key.indexOf(CHAT_KEY_SPLITTER) + CHAT_KEY_SPLITTER.length());
                 if (sub.contains(EXTRA_DATA_SPLITTER)) {
-                    extra = sub.substring(0, sub.indexOf(EXTRA_DATA_SPLITTER));
+                    return sub.substring(0, sub.indexOf(EXTRA_DATA_SPLITTER));
                 }
             }
         }
+        return null;
     }
+    
+    public static String getUidByChatkey(String chat_key) {
+        String uid = chat_key;
+        if (chat_key.contains(CHAT_KEY_SPLITTER)) {
+            uid = chat_key.substring(0, chat_key.indexOf(CHAT_KEY_SPLITTER));
+        }
+        return uid;
+    }
+
+    
 
     public void fillKeyMsg(String uid, String appkey, String chatKey) {
         if (CommonUtils.stringNotEmptyOrNull(uid)) {
@@ -95,7 +119,7 @@ public abstract class EngineQuery {
         fillKeyMsg(uid,appkey,chatKey);
     }
 
-    public EngineQuery(FormRequest formRequest) {
+    public EngineQuery(FormRequest<?, ?> formRequest) {
         this(formRequest.getUid(),formRequest.getChannelId(),formRequest.getChatKey());
     }
 
@@ -110,10 +134,18 @@ public abstract class EngineQuery {
         }
     }
 
+    /**
+     * @Deprecated use uid
+     */
+    @Deprecated
     public String getChatKey() {
         return chatKey;
     }
 
+    /**
+     * @Deprecated use uid
+     */
+    @Deprecated
     public void setChatKey(String chatKey) {
         this.chatKey = chatKey;
     }
@@ -214,6 +246,14 @@ public abstract class EngineQuery {
             throw new NullPointerException("Request parameters not initialized!");
         }
         return getIntegerValue(requestParams, key, defaultValue);
+    }
+    
+    public String getUid() {
+        return uid;
+    }
+    
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
 }
