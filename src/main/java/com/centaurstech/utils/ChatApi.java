@@ -177,6 +177,9 @@ public class ChatApi extends SimpleHttpClient {
         jsonObject.put("msg", chatParameter.getAsk());
         jsonObject.put("new_session", String.valueOf(chatParameter.isNewSession()));
         jsonObject.put("extra_info", chatParameter.getExtraInfo());
+        if (chatParameter.getSn() != null) {
+            jsonObject.put("sn", chatParameter.getSn());
+        }
         if (chatParameter.getGeo() != null) {
             jsonObject.put("geo[lat]", chatParameter.getGeo().getLat());
             jsonObject.put("geo[lng]", chatParameter.getGeo().getLng());
