@@ -69,6 +69,9 @@ public class EngineQueryResult {
 
     public void setSolution(String solution) {
         this.solution = solution;
+        if (this.solution != null) {
+            this.solution = this.solution.replace("|", "-");
+        }
     }
 
     public int getStatus() {
