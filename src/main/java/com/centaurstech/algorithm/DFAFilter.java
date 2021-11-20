@@ -1,6 +1,7 @@
 package com.centaurstech.algorithm;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 参考https://my.oschina.net/magicalSam/blog/1528428
@@ -10,15 +11,37 @@ import java.util.*;
  * Created on 2018/12/04
  */
 public class DFAFilter {
+    
+    
+    public enum MatchType {
+      //最短，如：敏感词库["中国","中国人"]，语句："我是中国人"，匹配结果：我是[中国]人
+        MIN,
+      //最长，如：敏感词库["中国","中国人"]，语句："我是中国人"，匹配结果：我是[中国人]
+        MAX,
+      //所有，如：敏感词库["中国","中国人"]，语句："我是中国人"，匹配结果：我是[中国人]  
+        ALL
+    }
 
     /**
-     * 敏感词匹配规则
+     * @Deprecated use enum MatchType
      */
-    public static final int MinMatchTYpe = 1;      //最小匹配规则，如：敏感词库["中国","中国人"]，语句："我是中国人"，匹配结果：我是[中国]人
-    public static final int MaxMatchType = 2;      //最大匹配规则，如：敏感词库["中国","中国人"]，语句："我是中国人"，匹配结果：我是[中国人]
+    @Deprecated
+    public static final int MinMatchTYpe = 1; 
+    
+    /**
+     * @Deprecated use enum MatchType
+     */
+    @Deprecated
+    public static final int MaxMatchType = 2;      
 
     public class DFANode {
+        /**
+         * 下一级节点
+         */
         HashMap<Character, DFANode> data;
+        /**
+         * 是否某个敏感词在该node结束
+         */
         boolean isEnd;
 
         public DFANode() {
@@ -70,6 +93,17 @@ public class DFAFilter {
 
         return resultReplace;
     }
+    
+    
+    private MatchType codeToMatchType(int code) {
+        MatchType matchType;
+        if (code == MinMatchTYpe) {
+            matchType = MatchType.MIN;
+        } else {
+            matchType = MatchType.MAX;
+        }
+        return matchType;
+    }
 
     /**
      * 初始化敏感词库，构建DFA算法模型
@@ -87,36 +121,33 @@ public class DFAFilter {
      * @param sensitiveWordSet 敏感词库
      */
     private void initSensitiveWordMap(Set<String> sensitiveWordSet) {
-        //初始化敏感词容器，减少扩容操作
+        
         sensitiveWordMapRoot = new DFANode();
         String key;
         DFANode nowMap;
         DFANode newWorMap;
-        //迭代sensitiveWordSet
+ 
         Iterator<String> iterator = sensitiveWordSet.iterator();
         while (iterator.hasNext()) {
-            // 一个关键字
+
             key = iterator.next();
             nowMap = sensitiveWordMapRoot;
             for (int i = 0; i < key.length(); i++) {
 
                 Character keyChar = key.charAt(i);
-                //库中获取关键字
+
                 DFANode wordMap = nowMap.get(keyChar);
-                //如果存在该key，直接赋值，用于下一个循环获取
+
                 if (wordMap != null) {
                     nowMap = wordMap;
                 } else {
-                    //不存在则，则构建一个map，同时将isEnd设置为0，因为他不是最后一个
                     newWorMap = new DFANode();
-                    //不是最后一个
                     newWorMap.isEnd = false;
                     nowMap.put(keyChar, newWorMap);
                     nowMap = newWorMap;
                 }
 
                 if (i == key.length() - 1) {
-                    //最后一个
                     nowMap.isEnd = true;
                 }
             }
@@ -124,105 +155,119 @@ public class DFAFilter {
     }
 
     /**
-     * 判断文字是否包含敏感字符
-     *
-     * @param txt       文字
-     * @param matchType 匹配规则 1：最小匹配规则，2：最大匹配规则
-     * @return 若包含返回true，否则返回false
+     * @Deprecated use enum matchType
      */
-    public boolean contains(String txt, int matchType, int lengthFloor, int lengthCeiling) {
-        boolean flag = false;
-        for (int i = 0; i < txt.length(); i++) {
-            int matchFlag = checkSensitiveWord(txt, i, matchType, lengthFloor, lengthCeiling); //判断是否包含敏感字符
-            if (matchFlag > 0) {    //大于0存在，返回true
-                flag = true;
-            }
-        }
-        return flag;
+    @Deprecated
+    public boolean contains(String txt, int matchTypeCode, int floor, int ceiling) {
+        List<String> words = getSensitiveWordList(txt, matchTypeCode, floor, ceiling);
+        return words.size() > 0;
     }
+    
+    /**
+     * 计算txt中是否存在敏感词
+     * @param lengthFilterFloor include; 不限制则传null;
+     * @param lengthFilterCeiling exclude; 不限制则传null;
+     */
+    public boolean contains(String txt, MatchType matchType, Integer lengthFilterFloor, Integer lengthFilterCeiling) {
+        List<String> words = getSensitiveWordList(txt, matchType, lengthFilterFloor, lengthFilterCeiling);
+        return words.size() > 0;
+    }
+    
 
     /**
-     * 判断文字是否包含敏感字符
-     *
-     * @param txt 文字
-     * @return 若包含返回true，否则返回false
+     * @Deprecated use enum matchType
      */
+    @Deprecated
     public boolean contains(String txt) {
         return contains(txt, MaxMatchType, -1, -1);
     }
 
     /**
-     * 获取文字中的敏感词
-     *
-     * @param txt       文字
-     * @param matchType 匹配规则 1：最小匹配规则，2：最大匹配规则
-     * @return
+     * @Deprecated use enum matchType
      */
+    @Deprecated
     public Set<String> getSensitiveWord(String txt, int matchType, int lengthFloor, int lengthCeiling) {
-        Set<String> sensitiveWordList = new HashSet<String>();
-
-        for (int i = 0; i < txt.length(); i++) {
-            //判断是否包含敏感字符
-            int length = checkSensitiveWord(txt, i, matchType, lengthFloor, lengthCeiling);
-            if (length > 0) {//存在,加入list中
-                sensitiveWordList.add(txt.substring(i, i + length));
-                i = i + length - 1;//减1的原因，是因为for会自增
-            }
-        }
-
-        return sensitiveWordList;
+        return new HashSet<>(getSensitiveWordList(txt, matchType, lengthFloor, lengthCeiling));
     }
 
     /**
-     * Get sensitiveword list ordered
-     * @param txt
-     * @return
+     * @Deprecated use enum matchType
      */
+    @Deprecated
     public List<String> getSensitiveWordList(String txt) {
         return getSensitiveWordList(txt, MaxMatchType, -1, -1);
     }
-
+    
+    
     /**
-     * Get sensitiveword list ordered
-     * @param txt
-     * @param matchType
-     * @param lengthFloor
-     * @param lengthCeiling
-     * @return
+     * @Deprecated use enum matchType
      */
-    public List<String> getSensitiveWordList(String txt, int matchType, int lengthFloor, int lengthCeiling) {
-        List<String> sensitiveWordList = new ArrayList<>();
-
-        for (int i = 0; i < txt.length(); i++) {
-            //判断是否包含敏感字符
-            int length = checkSensitiveWord(txt, i, matchType, lengthFloor, lengthCeiling);
-            if (length > 0) {//存在,加入list中
-                sensitiveWordList.add(txt.substring(i, i + length));
-                i = i + length - 1;//减1的原因，是因为for会自增
-            }
-        }
-
-        return sensitiveWordList;
+    @Deprecated
+    public List<String> getSensitiveWordList(String txt, int matchTypeCode, int floor, int ceiling) {
+        return getSensitiveWordList(txt, codeToMatchType(matchTypeCode), floor < 0 ? null : floor, ceiling < 0 ? null : ceiling);
     }
 
     /**
-     * 获取文字中的敏感词
-     *
-     * @param txt 文字
-     * @return
+     * 计算txt中的所有敏感词。结果排序与该敏感词在原文中的其实位置一致。
+     * @param lengthFilterFloor include; 不限制则传null;
+     * @param lengthFilterCeiling exclude; 不限制则传null;
      */
+    public List<String> getSensitiveWordList(String txt, MatchType matchType, Integer lengthFilterFloor, Integer lengthFilterCeiling) {
+        
+        List<String> result = new ArrayList<>();
+
+        for (int i = 0; i < txt.length(); i++) {
+            
+            List<String> wordsFromBeginIndex = getSensitiveWordsFromBeginIndex(txt, i);
+            
+            wordsFromBeginIndex.removeIf(word -> {
+                boolean floorMatch = lengthFilterFloor == null || word.length() >= lengthFilterFloor;
+                boolean ceilingMatch = lengthFilterCeiling == null || word.length() < lengthFilterCeiling;
+                return !floorMatch || !ceilingMatch;
+            });
+            
+            
+            if (wordsFromBeginIndex.size() > 0) {
+                wordsFromBeginIndex.sort(Comparator.comparingInt(String::length));
+
+                switch (matchType) {
+                    case MIN:
+                        result.add(wordsFromBeginIndex.get(0));
+                        // skip some length
+                        i = i + wordsFromBeginIndex.get(0).length() - 1;
+                        break;
+                    case MAX:
+                        result.add(wordsFromBeginIndex.get(wordsFromBeginIndex.size() - 1));
+                        // skip some length
+                        i = i + wordsFromBeginIndex.get(wordsFromBeginIndex.size() - 1).length() - 1;
+                        break;
+                    case ALL:    
+                        result.addAll(wordsFromBeginIndex);
+                        // not skip
+                        break; 
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * @Deprecated use enum matchType
+     */
+    @Deprecated
     public Set<String> getSensitiveWord(String txt) {
         return getSensitiveWord(txt, MaxMatchType, -1, -1);
     }
 
+
     /**
-     * 替换敏感字字符
-     *
-     * @param txt         文本
-     * @param replaceChar 替换的字符，匹配的敏感词以字符逐个替换，如 语句：我爱中国人 敏感词：中国人，替换字符：*， 替换结果：我爱***
-     * @param matchType   敏感词匹配规则
-     * @return
+     * 替换的字符，匹配的敏感词以字符逐个替换，如 语句：我爱中国人 敏感词：中国人，替换字符：*， 替换结果：我爱***
+     * @Deprecated getWordsList()后自行替换，本工具不再提供替换方法
      */
+    @Deprecated
     public String replaceSensitiveWord(String txt, char replaceChar, int matchType) {
         String resultTxt = txt;
         //获取所有的敏感词
@@ -240,24 +285,18 @@ public class DFAFilter {
     }
 
     /**
-     * 替换敏感字字符
-     *
-     * @param txt         文本
-     * @param replaceChar 替换的字符，匹配的敏感词以字符逐个替换，如 语句：我爱中国人 敏感词：中国人，替换字符：*， 替换结果：我爱***
-     * @return
+     * @Deprecated getWordsList()后自行替换，本工具不再提供替换方法
      */
+    @Deprecated
     public String replaceSensitiveWord(String txt, char replaceChar) {
         return replaceSensitiveWord(txt, replaceChar, MaxMatchType);
     }
 
     /**
-     * 替换敏感字字符
-     *
-     * @param txt        文本
-     * @param replaceStr 替换的字符串，匹配的敏感词以字符逐个替换，如 语句：我爱中国人 敏感词：中国人，替换字符串：[屏蔽]，替换结果：我爱[屏蔽]
-     * @param matchType  敏感词匹配规则
-     * @return
+     * 替换的字符串，匹配的敏感词以字符逐个替换，如 语句：我爱中国人 敏感词：中国人，替换字符串：[屏蔽]，替换结果：我爱[屏蔽]
+     * @Deprecated getWordsList()后自行替换，本工具不再提供替换方法
      */
+    @Deprecated
     public String replaceSensitiveWord(String txt, String replaceStr, int matchType) {
         String resultTxt = txt;
         //获取所有的敏感词
@@ -273,66 +312,43 @@ public class DFAFilter {
     }
 
     /**
-     * 替换敏感字字符
-     *
-     * @param txt        文本
-     * @param replaceStr 替换的字符串，匹配的敏感词以字符逐个替换，如 语句：我爱中国人 敏感词：中国人，替换字符串：[屏蔽]，替换结果：我爱[屏蔽]
-     * @return
+     * @Deprecated getWordsList()后自行替换，本工具不再提供替换方法
      */
+    @Deprecated
     public String replaceSensitiveWord(String txt, String replaceStr) {
         return replaceSensitiveWord(txt, replaceStr, MaxMatchType);
     }
 
+
     /**
-     * 检查文字中是否包含敏感字符，检查规则如下：<br>
-     *
-     * @param txt
-     * @param beginIndex
-     * @param matchType
-     * @return 如果存在，则返回敏感词字符的长度，不存在返回0
+     * 计算txt中，以beginIndex为起点，的所有敏感词
      */
-    private int checkSensitiveWord(String txt, int beginIndex, int matchType, int lengthFloor, int lengthCeiling) {
-        //敏感词结束标识位：用于敏感词只有1位的情况
-        boolean flag = false;
-        //匹配标识数默认为0
-        int matchFlag = 0;
-        //标记最长匹配到结尾的子串长度
-        int maxMatchLen = 0;
-        Character word;
-        DFANode nowMap = sensitiveWordMapRoot;
+    private List<String> getSensitiveWordsFromBeginIndex(String txt, int beginIndex) {
+        
+        List<Integer> matchedLengthList = new ArrayList<>(1);
+        
+        int matchedLength = 0;
+        
+        Character checkingChar;
+        DFANode currentNode = sensitiveWordMapRoot;
+        
         for (int i = beginIndex; i < txt.length(); i++) {
-            word = txt.charAt(i);
-            //获取指定key
-            nowMap = nowMap.get(word);
-            if (nowMap != null) {//存在，则判断是否为最后一个
-                //找到相应key，匹配标识+1
-                matchFlag++;
-                //如果为最后一个匹配规则,结束循环，返回匹配标识数
-                if (nowMap.isEnd) {
-                    //结束标志位为true
-                    flag = true;
-                    //记录最长匹配的长度
-                    maxMatchLen = matchFlag;
-                    //最小规则，直接返回,最大规则还需继续查找
-                    if (MinMatchTYpe == matchType) {
-                        break;
-                    }
+            checkingChar = txt.charAt(i);
+            currentNode = currentNode.get(checkingChar);
+            if (currentNode != null) {
+                matchedLength++;
+                if (currentNode.isEnd) {
+                    matchedLengthList.add(matchedLength);
                 }
-            } else {//不存在，直接返回
-                break;
-            }
-            //最长匹配限制
-            if (lengthCeiling != -1 && matchFlag > lengthCeiling) {
+            } else {
                 break;
             }
         }
-
-        boolean minLengthSuit = (lengthFloor == -1 || maxMatchLen > lengthFloor);
-
-        if (!flag || !minLengthSuit) {
-            return 0;
-        }
-        return maxMatchLen;
+        List<String> result = matchedLengthList.stream()
+                .map(length -> txt.substring(beginIndex, beginIndex + length))
+                .collect(Collectors.toList());
+        
+        return result;
     }
 
 }

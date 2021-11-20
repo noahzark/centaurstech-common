@@ -2,6 +2,11 @@ package com.centaurstech.algorithm;
 
 import org.junit.Test;
 
+import com.centaurstech.algorithm.DFAFilter.MatchType;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,44 +19,58 @@ public class DFAFilterTest {
         sensitiveWordSet.add("white");
         sensitiveWordSet.add("album");
         sensitiveWordSet.add("季节");
+        sensitiveWordSet.add("季");
+        sensitiveWordSet.add("it");
         //初始化敏感词库
 
         DFAFilter dfaFilter = DFAFilter.fromWordSet(sensitiveWordSet);
 
-        System.out.println("敏感词的数量：" + dfaFilter.sensitiveWordMapRoot.size());
-        String string = "又到了white album的季节";
-        System.out.println("待检测语句字数：" + string.length());
-
-        //是否含有关键字
-        boolean result;
-        result = dfaFilter.contains(string);
-        System.out.println(result);
-        result = dfaFilter.contains(string, DFAFilter.MinMatchTYpe, -1, -1);
-        System.out.println(result);
-
-        //获取语句中的敏感词
-        Set<String> set;
-        set = dfaFilter.getSensitiveWord(string);
-        System.out.println("语句中包含敏感词的个数为：" + set.size() + "。包含：" + set);
-        set = dfaFilter.getSensitiveWord(string, DFAFilter.MaxMatchType, 4, -1);
-        System.out.println("语句中包含敏感词(4, +∞)的个数为：" + set.size() + "。包含：" + set);
-        set = dfaFilter.getSensitiveWord(string, DFAFilter.MinMatchTYpe, 0, 5);
-        System.out.println("语句中包含敏感词(0, 4]的个数为：" + set.size() + "。包含：" + set);
-
-        //替换语句中的敏感词
-        String filterStr = dfaFilter.replaceSensitiveWord(string, '*');
-        System.out.println(filterStr);
-        filterStr = dfaFilter.replaceSensitiveWord(string, '*', DFAFilter.MinMatchTYpe);
-        System.out.println(filterStr);
-
-        String filterStr2 = dfaFilter.replaceSensitiveWord(string, "[*敏感词*]");
-        System.out.println(filterStr2);
-        filterStr2 = dfaFilter.replaceSensitiveWord(string, "[*敏感词*]", DFAFilter.MinMatchTYpe);
-        System.out.println(filterStr2);
-
-        // 按出现顺序获取关键词列表
-        List<String> resultList = dfaFilter.getSensitiveWordList(string);
-        System.out.println(String.valueOf(resultList));
+        String txt = "又到了white album的季节";
+        String notMatchedTxt = "又到了whi albu的节";
+        
+        List<String> assertList;
+        
+        // ------ MAX ------
+        // without length filter
+        assertList = Arrays.asList("white", "album", "季节");
+        assertEquals(true, dfaFilter.contains(txt, MatchType.MAX, null, null));
+        assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.MAX, null, null));
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MAX, null, null));
+        // with length filter
+        assertList = Arrays.asList("white", "album");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MAX, 5, null));
+        assertList = Arrays.asList("it", "季节");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MAX, null, 5));
+        assertList = Arrays.asList("white", "album");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MAX, 5, 6));
+        
+        // ------ MIN ------
+        // without length filter
+        assertList = Arrays.asList("white", "album", "季");
+        assertEquals(true, dfaFilter.contains(txt, MatchType.MIN, null, null));
+        assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.MIN, null, null));
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MIN, null, null));
+        // with length filter
+        assertList = Arrays.asList("white", "album");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MIN, 5, null));
+        assertList = Arrays.asList("it", "季");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MIN, null, 5));
+        assertList = Arrays.asList("white", "album");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MIN, 5, 6));
+        
+        // ------ ALL ------
+        // without length filter
+        assertList = Arrays.asList("white", "it", "album", "季", "季节");
+        assertEquals(true, dfaFilter.contains(txt, MatchType.ALL, null, null));
+        assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.ALL, null, null));
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.ALL, null, null));
+        // with length filter
+        assertList = Arrays.asList("white", "album");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.ALL, 5, null));
+        assertList = Arrays.asList("it", "季", "季节");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.ALL, null, 5));
+        assertList = Arrays.asList("white", "album");
+        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.ALL, 5, 6));
     }
 
 }
