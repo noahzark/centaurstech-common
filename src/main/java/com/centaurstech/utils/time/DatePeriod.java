@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Feliciano on 9/9/2018.
@@ -28,12 +29,13 @@ public enum DatePeriod implements ComparablePeriod {
     }
 
     public static Calendar beginOfToday(){
-//        final Calendar cal = Calendar.getInstance();
-//        Date date = cal.getTime();
-//        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        //这个和beginOfDay的相互调用不会有问题吗？
-        return beginOfDay(0);
+        Calendar date = new GregorianCalendar();
+        // reset hour, minutes, seconds and millis
+        date.set(Calendar.HOUR_OF_DAY, 0);
+        date.set(Calendar.MINUTE, 0);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+        return date;
     }
 
     public static Calendar endOfToday(){

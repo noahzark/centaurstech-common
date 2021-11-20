@@ -25,6 +25,8 @@ public class ChatParameter {
 
     JSONObject extraInfo;
 
+    String sn;
+
     private ChatParameter() {
         headers = new HashMap<>();
     }
@@ -114,5 +116,13 @@ public class ChatParameter {
     public ChatParameter setExtraInfo(JSONObject extraInfo) {
         this.extraInfo = extraInfo;
         return this;
+    }
+
+    public String getSn() {
+        return sn;
+    }
+
+    public void setSn(String sn) {
+        this.sn = sn;
     }
 }

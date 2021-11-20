@@ -1,14 +1,19 @@
 package com.centaurstech.utils.email;
+
 import com.sun.mail.util.MailSSLSocketFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 
 /**
  * Created by Feliciano on 11/22/2017.
- *
+ * <p>
  * Refactored by Feliciano Long on 09/17/2018
  */
 public class EmailClient implements IEmailClient {
@@ -35,7 +40,24 @@ public class EmailClient implements IEmailClient {
         }
     }
 
+    @Override
     public boolean send(String to, String title, String content) {
+        return send(to, title, content, null);
+    }
+
+    @Override
+    public boolean send(List<String> to, String title, String content) {
+        return send(to, title, content, null);
+    }
+
+    @Override
+    public boolean send(String to, String title, String content, List<File> files) {
+        List<String> list = Arrays.asList(to.split(","));
+        return send(list, title, content, files);
+    }
+
+    @Override
+    public boolean send(List<String> to, String title, String content, List<File> files) {
         //String from = "server@centaurstech.com";//change accordingly
         //String host = "smtp.exmail.qq.com";//or IP address
 
@@ -65,23 +87,46 @@ public class EmailClient implements IEmailClient {
         Session session = Session.getDefaultInstance(properties, emailClientAuthenticator);
 
         //compose the message
-        try{
+        try {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+
+            // add receptions
+            InternetAddress[] receptions = new InternetAddress[to.size()];
+            for (int i = 0; i < to.size(); i++) {
+                receptions[i] = new InternetAddress(to.get(i));
+            }
+            message.addRecipients(Message.RecipientType.TO, receptions);
+
+            // add subject
             message.setSubject(title);
-            message.setText(content);
+
+            // set content
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setContent(content, "text/html;charset=UTF-8");
+
+            // add multi part
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            if (files != null) {
+                MimeBodyPart attachmentPart = new MimeBodyPart();
+                for (File file : files) {
+                    attachmentPart.attachFile(file);
+                }
+                multipart.addBodyPart(attachmentPart);
+            }
+            message.setContent(multipart);
 
             // Send message
             Transport.send(message);
-        }catch (MessagingException mex) {
+        } catch (MessagingException | IOException mex) {
             mex.printStackTrace();
             return false;
         }
         return true;
     }
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
         EmailClient emailClient = new EmailClient(
                 "smtp.exmail.qq.com",
                 "server@centaurstech.com");

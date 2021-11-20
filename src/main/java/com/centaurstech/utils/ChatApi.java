@@ -177,6 +177,9 @@ public class ChatApi extends SimpleHttpClient {
         jsonObject.put("msg", chatParameter.getAsk());
         jsonObject.put("new_session", String.valueOf(chatParameter.isNewSession()));
         jsonObject.put("extra_info", chatParameter.getExtraInfo());
+        if (chatParameter.getSn() != null) {
+            jsonObject.put("sn", chatParameter.getSn());
+        }
         if (chatParameter.getGeo() != null) {
             jsonObject.put("geo[lat]", chatParameter.getGeo().getLat());
             jsonObject.put("geo[lng]", chatParameter.getGeo().getLng());
@@ -254,6 +257,25 @@ public class ChatApi extends SimpleHttpClient {
         queries.put("nickname", nickname);
 
         return queries;
+    }
+
+    public JSONObject proxyData(ChatApp chatApp, String uid, JSONObject json) throws IOException {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String time = Long.toString(timestamp.getTime());
+        String verify = Md5.digest(chatApp.getAppsecret() + uid + time);
+        json.put("timestamp", time);
+        json.put("uid", uid);
+        json.put("verify", verify);
+        json.put("appkey", chatApp.getAppkey());
+
+        RequestBody body = RequestBody.create(JSON, json.toString());
+        JSONObject res;
+        if (isSingleApiServer) {
+            res = postForJSON(body);
+        } else {
+            res = postForJSON("/api/data", body);
+        }
+        return res;
     }
 
     public String sendJson(String queryResultType, JSONObject jsonObject, String serverSalt) throws IOException {

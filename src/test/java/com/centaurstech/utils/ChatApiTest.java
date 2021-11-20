@@ -49,6 +49,22 @@ public class ChatApiTest {
     }
 
     @Test
+    public void testProxyData() throws Exception {
+        EngineQuery engineQuery = new EngineQueryProxy("/api/chat/data");
+        ChatApi chatApi = new ChatApi("http://localhost:18001");
+        JSONObject jsonObject = new JSONObject("{\"extra_order_info\":{\"skillName\":\"RECHARGE\",\"scene\":\"RECHARGE_MEMORY_UPDATE\",\"data\":{\"clear_query\":false,\"erased_fields\":\"\",\"set_fields\":{\"phone_num\":\"123456\",\"money\":\"100\",\"name\":\"\"}}},\"appkey\":\"qiwurobot\",\"lang\":\"zh\",\"timestamp\":\"1615287470\"}");
+
+        String appkey = "qiwurobot";
+        String appsecret = "123456";
+        ChatApp chatApp = new ChatApp(appkey, appsecret);
+        JSONObject result = chatApi.proxyData(chatApp, "123456", jsonObject);
+        assertThat(result, is(IsNull.notNullValue()));
+        System.out.println(result.toString());
+
+        System.out.println(engineQuery.getQueryTimeString());
+    }
+
+    @Test
     //测试向对话接口发送Json数据
     public void testSendJson() throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/api/chat/data");
