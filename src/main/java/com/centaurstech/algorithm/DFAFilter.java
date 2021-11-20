@@ -163,6 +163,11 @@ public class DFAFilter {
         return words.size() > 0;
     }
     
+
+    public boolean contains(String txt, MatchType matchType) {
+        return contains(txt, matchType, null, null);
+    }
+    
     /**
      * 计算txt中是否存在敏感词
      * @param lengthFilterFloor include; 不限制则传null;
@@ -205,6 +210,11 @@ public class DFAFilter {
     @Deprecated
     public List<String> getSensitiveWordList(String txt, int matchTypeCode, int floor, int ceiling) {
         return getSensitiveWordList(txt, codeToMatchType(matchTypeCode), floor < 0 ? null : floor, ceiling < 0 ? null : ceiling);
+    }
+    
+    
+    public List<String> getSensitiveWordList(String txt, MatchType matchType) {
+        return getSensitiveWordList(txt, matchType, null, null);
     }
 
     /**
