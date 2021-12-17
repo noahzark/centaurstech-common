@@ -76,12 +76,13 @@ public abstract class EngineQuery {
         String chatKey = chat_key;
         if (chat_key.contains(CHAT_KEY_SPLITTER)) {
             chatKey = chat_key.substring(0, chat_key.indexOf(CHAT_KEY_SPLITTER));
-            if (chat_key.contains(EXTRA_DATA_SPLITTER)) {
-                String sub = chat_key.substring(chat_key.indexOf(CHAT_KEY_SPLITTER) + 3);
-                if (sub.contains(EXTRA_DATA_SPLITTER)) {
-                    extra = sub.substring(0, sub.indexOf(EXTRA_DATA_SPLITTER));
-                }
-            }
+            // no need calculate and set extra
+//            if (chat_key.contains(EXTRA_DATA_SPLITTER)) {
+//                String sub = chat_key.substring(chat_key.indexOf(CHAT_KEY_SPLITTER) + 3);
+//                if (sub.contains(EXTRA_DATA_SPLITTER)) {
+//                    extra = sub.substring(0, sub.indexOf(EXTRA_DATA_SPLITTER));
+//                }
+//            }
         }
         return chatKey;
     }
