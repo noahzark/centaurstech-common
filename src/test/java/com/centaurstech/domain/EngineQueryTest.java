@@ -21,26 +21,32 @@ public class EngineQueryTest {
         requestParam.put("chat_key", "123456@@@987654");
         EngineQuery engineQuery = new EngineQueryProxy(requestParam);
         assertThat(engineQuery.getChatKey(), is("123456"));
+        assertThat(engineQuery.getUid(), is("123456"));
 
         engineQuery = new EngineQueryProxy("123456@@@987654");
         assertThat(engineQuery.getChatKey(), is("123456"));
+        assertThat(engineQuery.getUid(), is("123456"));
 
         requestParam.put("chat_key", "123456###987654");
         engineQuery = new EngineQueryProxy(requestParam);
         assertThat(engineQuery.getChatKey(), is("123456###987654"));
+        assertThat(engineQuery.getUid(), is("123456###987654"));
 
         requestParam.put("chat_key", "123456@@@");
         engineQuery = new EngineQueryProxy(requestParam);
         assertThat(engineQuery.getChatKey(), is("123456"));
+        assertThat(engineQuery.getUid(), is("123456"));
 
         requestParam.put("chat_key", "123@@@456###987654");
         engineQuery = new EngineQueryProxy(requestParam);
         assertThat(engineQuery.getChatKey(), is("123"));
+        assertThat(engineQuery.getUid(), is("123"));
         assertThat(engineQuery.getExtra(), is("456"));
 
         requestParam.put("chat_key", "123@@@456###");
         engineQuery = new EngineQueryProxy(requestParam, true);
         assertThat(engineQuery.getChatKey(), is("123"));
+        assertThat(engineQuery.getUid(), is("123"));
         assertThat(engineQuery.getExtra(), is("456"));
 
         requestParam.put("hi", "true");

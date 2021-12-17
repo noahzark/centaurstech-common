@@ -66,8 +66,24 @@ public abstract class EngineQuery {
 
     public EngineQuery(String chat_key) {
         this();
+        // field-chatKey 的值将和旧版本一致
+        this.chatKey = getOldVersionChatKey(chat_key);
         this.uid = getUidByChatkey(chat_key);
         this.extra = getExtraByChatkey(chat_key);
+    }
+    
+    private String getOldVersionChatKey(String chat_key) {
+        String chatKey = chat_key;
+        if (chat_key.contains(CHAT_KEY_SPLITTER)) {
+            chatKey = chat_key.substring(0, chat_key.indexOf(CHAT_KEY_SPLITTER));
+            if (chat_key.contains(EXTRA_DATA_SPLITTER)) {
+                String sub = chat_key.substring(chat_key.indexOf(CHAT_KEY_SPLITTER) + 3);
+                if (sub.contains(EXTRA_DATA_SPLITTER)) {
+                    extra = sub.substring(0, sub.indexOf(EXTRA_DATA_SPLITTER));
+                }
+            }
+        }
+        return chatKey;
     }
     
     
@@ -95,6 +111,7 @@ public abstract class EngineQuery {
 
     public void fillKeyMsg(String uid, String appkey, String chatKey) {
         if (CommonUtils.stringNotEmptyOrNull(uid)) {
+            this.uid = uid;
             this.chatKey = uid;
         }
         if (CommonUtils.stringNotEmptyOrNull(appkey)) {
