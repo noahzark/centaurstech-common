@@ -23,7 +23,7 @@ public class ChatParameter {
 
     Map<String, String> headers;
 
-    JSONObject extraInfo;
+    Object extraInfo;
 
     String sn;
 
@@ -109,11 +109,16 @@ public class ChatParameter {
         return this;
     }
 
-    public JSONObject getExtraInfo() {
+    public Object getExtraInfo() {
         return extraInfo;
     }
 
-    public ChatParameter setExtraInfo(JSONObject extraInfo) {
+    /***
+     * 额外传递的信息，应该是一个 String 或一个 JSONObject
+     * @param extraInfo
+     * @return
+     */
+    public ChatParameter setExtraInfo(Object extraInfo) {
         this.extraInfo = extraInfo;
         return this;
     }
