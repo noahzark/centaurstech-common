@@ -12,6 +12,22 @@ import java.util.stream.Collectors;
  */
 public class DFAFilter {
     
+    public static class DfaResultNode {
+        private final String text;
+        private final int startIndex;
+        
+        public DfaResultNode(String text, int startIndex) {
+            super();
+            this.text = text;
+            this.startIndex = startIndex;
+        }
+        public String getText() {
+            return text;
+        }
+        public int getStartIndex() {
+            return startIndex;
+        }
+    }
     
     public enum MatchType {
         /**
@@ -224,19 +240,32 @@ public class DFAFilter {
     }
 
     /**
+     * @Deprecated use getDfaResults
      * 计算txt中的所有敏感词。结果排序与该敏感词在原文中的其实位置一致。
      * @param lengthFilterFloor include; 不限制则传null;
      * @param lengthFilterCeiling exclude; 不限制则传null;
      */
+    @Deprecated
     public List<String> getSensitiveWordList(String txt, MatchType matchType, Integer lengthFilterFloor, Integer lengthFilterCeiling) {
-        
-        List<String> result = new ArrayList<>();
+        List<DfaResultNode> dfaResultNodes = getDfaResult(txt, matchType, lengthFilterFloor, lengthFilterCeiling);
+        return dfaResultNodes.stream().map(node -> node.getText()).collect(Collectors.toList());
+    }
+    
+    /**
+     * 计算txt中的所有敏感词。结果包含其在原串的起始位置。同一个敏感词出现于不同位置时得到多个结果。
+     * @param lengthFilterFloor include; 不限制则传null;
+     * @param lengthFilterCeiling exclude; 不限制则传null;
+     * @return not null
+     */
+    public List<DfaResultNode> getDfaResult(String txt, MatchType matchType, Integer lengthFilterFloor, Integer lengthFilterCeiling) {
+        List<DfaResultNode> result = new ArrayList<>();
 
         for (int i = 0; i < txt.length(); i++) {
             
-            List<String> wordsFromBeginIndex = getSensitiveWordsFromBeginIndex(txt, i);
+            List<DfaResultNode> wordsFromBeginIndex = getDfaResultNodesFromBeginIndex(txt, i);
             
-            wordsFromBeginIndex.removeIf(word -> {
+            wordsFromBeginIndex.removeIf(node -> {
+                String word = node.getText();
                 boolean floorMatch = lengthFilterFloor == null || word.length() >= lengthFilterFloor;
                 boolean ceilingMatch = lengthFilterCeiling == null || word.length() < lengthFilterCeiling;
                 return !floorMatch || !ceilingMatch;
@@ -244,18 +273,18 @@ public class DFAFilter {
             
             
             if (wordsFromBeginIndex.size() > 0) {
-                wordsFromBeginIndex.sort(Comparator.comparingInt(String::length));
+                wordsFromBeginIndex.sort(Comparator.comparingInt(node -> node.getText().length()));
 
                 switch (matchType) {
                     case MIN:
                         result.add(wordsFromBeginIndex.get(0));
                         // skip some length
-                        i = i + wordsFromBeginIndex.get(0).length() - 1;
+                        i = i + wordsFromBeginIndex.get(0).getText().length() - 1;
                         break;
                     case MAX:
                         result.add(wordsFromBeginIndex.get(wordsFromBeginIndex.size() - 1));
                         // skip some length
-                        i = i + wordsFromBeginIndex.get(wordsFromBeginIndex.size() - 1).length() - 1;
+                        i = i + wordsFromBeginIndex.get(wordsFromBeginIndex.size() - 1).getText().length() - 1;
                         break;
                     case ALL:    
                         result.addAll(wordsFromBeginIndex);
@@ -339,7 +368,7 @@ public class DFAFilter {
     /**
      * 计算txt中，以beginIndex为起点，的所有敏感词
      */
-    private List<String> getSensitiveWordsFromBeginIndex(String txt, int beginIndex) {
+    private List<DfaResultNode> getDfaResultNodesFromBeginIndex(String input, int beginIndex) {
         
         List<Integer> matchedLengthList = new ArrayList<>(1);
         
@@ -348,8 +377,8 @@ public class DFAFilter {
         Character checkingChar;
         DFANode currentNode = sensitiveWordMapRoot;
         
-        for (int i = beginIndex; i < txt.length(); i++) {
-            checkingChar = txt.charAt(i);
+        for (int i = beginIndex; i < input.length(); i++) {
+            checkingChar = input.charAt(i);
             currentNode = currentNode.get(checkingChar);
             if (currentNode != null) {
                 matchedLength++;
@@ -360,8 +389,11 @@ public class DFAFilter {
                 break;
             }
         }
-        List<String> result = matchedLengthList.stream()
-                .map(length -> txt.substring(beginIndex, beginIndex + length))
+        List<DfaResultNode> result = matchedLengthList.stream()
+                .map(length -> {
+                    String text = input.substring(beginIndex, beginIndex + length);
+                    return new DfaResultNode(text, beginIndex);
+                })
                 .collect(Collectors.toList());
         
         return result;

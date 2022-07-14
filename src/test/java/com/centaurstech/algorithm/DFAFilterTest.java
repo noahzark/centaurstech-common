@@ -3,6 +3,7 @@ package com.centaurstech.algorithm;
 import org.junit.Test;
 
 import com.centaurstech.algorithm.DFAFilter.MatchType;
+import com.centaurstech.algorithm.DFAFilter.DfaResultNode;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,6 +16,98 @@ public class DFAFilterTest {
 
     @Test
     public void testDFAFilter() {
+        Set<String> sensitiveWordSet = new HashSet<>();
+        sensitiveWordSet.add("foo");
+        sensitiveWordSet.add("工程师foo");
+        sensitiveWordSet.add("bar");
+        //初始化敏感词库
+
+        DFAFilter dfaFilter = DFAFilter.fromWordSet(sensitiveWordSet);
+
+        String txt = "测试工程师foo来到bar";
+        String notMatchedTxt = "测试工程师boo来到far";
+        
+        List<DfaResultNode> assertList;
+        
+        // ------ MAX ------
+        // without length filter
+        assertList = Arrays.asList(
+                new DfaResultNode("工程师foo", 2), 
+                new DfaResultNode("bar", 10)
+                );
+        assertEquals(true, dfaFilter.contains(txt, MatchType.MAX, null, null));
+        assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.MAX, null, null));
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MAX, null, null));
+        // with length filter
+        assertList = Arrays.asList(
+                new DfaResultNode("工程师foo", 2), 
+                new DfaResultNode("bar", 10)
+                );
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MAX, 4, null));
+        assertList = Arrays.asList(
+                new DfaResultNode("foo", 5), 
+                new DfaResultNode("bar", 10)
+                );
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MAX, null, 4));
+        assertList = Arrays.asList(
+                new DfaResultNode("工程师foo", 2), 
+                new DfaResultNode("bar", 10)
+                );
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MAX, 4, 6));
+        
+        // ------ MIN ------
+        // without length filter
+        assertList = Arrays.asList(
+                new DfaResultNode("foo", 5), 
+                new DfaResultNode("bar", 10)
+                );
+        assertEquals(true, dfaFilter.contains(txt, MatchType.MIN, null, null));
+        assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.MIN, null, null));
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MIN, null, null));
+        // with length filter
+        assertList = Arrays.asList();
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MIN, 4, null));
+        assertList = Arrays.asList(
+                new DfaResultNode("foo", 5)
+                , new DfaResultNode("bar", 10)
+                );
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MIN, null, 4));
+        assertList = Arrays.asList();
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MIN, 4, 6));
+        
+        // ------ ALL ------
+        // without length filter
+        assertList = Arrays.asList(
+                new DfaResultNode("工程师foo", 2), 
+                new DfaResultNode("foo", 5), 
+                new DfaResultNode("bar", 10)
+                );
+        assertEquals(true, dfaFilter.contains(txt, MatchType.ALL, null, null));
+        assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.ALL, null, null));
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.ALL, null, null));
+        // with length filter
+        assertList = Arrays.asList(
+                new DfaResultNode("工程师foo", 2)
+                );
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.ALL, 4, null));
+        assertList = Arrays.asList(
+                new DfaResultNode("foo", 5), 
+                new DfaResultNode("bar", 10)
+                );
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.ALL, null, 4));
+        assertList = Arrays.asList(
+                new DfaResultNode("工程师foo", 2)
+                );
+        assertListContentToStringEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.ALL, 4, 6));
+    }
+    
+    private static <T> boolean assertListContentToStringEquals(List<T> list1, List<T> list2) {
+        return list1.toString().equals(list2.toString());
+    }
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testDFAFilterLegacy() {
         Set<String> sensitiveWordSet = new HashSet<>();
         sensitiveWordSet.add("white");
         sensitiveWordSet.add("album");
