@@ -2,14 +2,21 @@ group 'com.centaurstech'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: "maven-publish"
 
 sourceCompatibility = 1.8
 
 repositories {
     maven{ url"http://maven.aliyun.com/nexus/content/groups/public" }
     mavenCentral()
-    maven { url "https://jitpack.io" }
-    jcenter()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 dependencies {
