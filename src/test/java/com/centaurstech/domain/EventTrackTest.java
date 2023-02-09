@@ -13,7 +13,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import static com.centaurstech.domain.eventtrack.EventTrackItem.BotName.UNKNOWN;
 import static com.centaurstech.domain.eventtrack.EventTrackItem.Platform.SMART_LIFE_APP;
 import static com.centaurstech.domain.eventtrack.EventTrackProxy.BuffMode.HASH_SET;
-import static com.centaurstech.domain.eventtrack.EventTrackProxy.BuffMode.LINKED_BLOCKING_QUEUE;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class EventTrackTest {
@@ -103,6 +102,7 @@ public class EventTrackTest {
     }
 
     class EventTrackServiceHashSet extends EventTrackProxy {
+        @SuppressWarnings("deprecation")
         EventTrackServiceHashSet() {
             super((eventTracks) -> {
                 for (EventTrack eventTrack : eventTracks) {

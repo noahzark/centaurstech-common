@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
  * Created by Feliciano on 7/3/2018.
  * @author feli
  */
+@SuppressWarnings("deprecation")
 public class ChatApi extends SimpleHttpClient {
 
     public static final MediaType JSON
@@ -249,7 +250,7 @@ public class ChatApi extends SimpleHttpClient {
         String now = String.valueOf(TimeCalculator.nowInMillis());
         String verify = Md5.digest(appsecret + uid + now);
 
-        HashMap<String, String> queries = new HashMap(5);
+        HashMap<String, String> queries = new HashMap<>(5);
         queries.put("appkey", appkey);
         queries.put("uid", uid);
         queries.put("timestamp",now);

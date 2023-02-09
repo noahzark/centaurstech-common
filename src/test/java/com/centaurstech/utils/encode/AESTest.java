@@ -1,6 +1,5 @@
 package com.centaurstech.utils.encode;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.crypto.Cipher;
@@ -94,7 +93,6 @@ public class AESTest {
         byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
         byte[] ciphertext = cipher.doFinal(test.getBytes("UTF-8"));
 
-        String cipherString = new String();
         System.out.println("iv: " + new String(Base64.getEncoder().encodeToString(iv)));
         System.out.println("ciphertext: " + new String(Base64.getEncoder().encode(ciphertext)));
 

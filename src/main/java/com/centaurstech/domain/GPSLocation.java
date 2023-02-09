@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * Created by Feliciano on 7/11/2018.
  */
+@SuppressWarnings("serial")
 public class GPSLocation implements Serializable {
 
     Double lat;
@@ -40,6 +41,7 @@ public class GPSLocation implements Serializable {
         this.lng = lng;
     }
 
+    @Override
     public String toString() {
         return lat + ","+ lng;
     }

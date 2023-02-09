@@ -1,7 +1,6 @@
 package com.centaurstech.utils.http;
 
 import com.centaurstech.utils.StringExtractor;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -11,8 +10,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import static com.centaurstech.utils.QueryHelper.urlEncodeUTF8;
 
 /**

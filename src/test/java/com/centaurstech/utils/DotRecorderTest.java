@@ -32,8 +32,8 @@ public class DotRecorderTest {
         System.out.println(engineQuery.getQueryTimeString());
     }
 
-    public FutureTask buildFutureTask() {
-        return new FutureTask(() -> {
+    public FutureTask<Void> buildFutureTask() {
+        return new FutureTask<Void>(() -> {
             DotRecorder dotRecorder = DotRecorder.getInstance("MultiTest");
 
             for (int i=1; i<=100000; i++) { dotRecorder.dot("test" + i); }
@@ -56,14 +56,14 @@ public class DotRecorderTest {
                 100, MILLISECONDS,
                 new ArrayBlockingQueue<>(100));
 
-        ArrayList<FutureTask> tasks = new ArrayList<>();
+        ArrayList<FutureTask<Void>> tasks = new ArrayList<>();
         for (int i=1; i<=100; i++) {
-            FutureTask task = buildFutureTask();
+            FutureTask<Void> task = buildFutureTask();
             tasks.add(task);
             tpe.submit(task);
         }
 
-        for (FutureTask task : tasks) {
+        for (FutureTask<Void> task : tasks) {
             task.get();
         }
         DotRecorder.cleanInstances();

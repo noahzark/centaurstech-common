@@ -12,6 +12,7 @@ import java.util.Map;
  * @author Fangzhou.Long on 9/19/2019
  * @project common
  */
+@SuppressWarnings("deprecation")
 public class EngineChatApi extends SimpleHttpClient {
 
     EngineChatApi(String server) {

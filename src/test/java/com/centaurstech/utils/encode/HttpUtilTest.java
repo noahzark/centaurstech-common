@@ -1,7 +1,6 @@
 package com.centaurstech.utils.encode;
 
 import com.centaurstech.domain.BasicAuthData;
-import com.centaurstech.utils.StringExtractor;
 import org.junit.Test;
 
 public class HttpUtilTest {

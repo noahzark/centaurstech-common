@@ -11,6 +11,7 @@ import java.util.Map;
  *
  * @author Feliciano.Long
  */
+@SuppressWarnings("unused")
 public abstract class EngineQuery {
 
     public static String CHAT_KEY_SPLITTER = "@@@";
