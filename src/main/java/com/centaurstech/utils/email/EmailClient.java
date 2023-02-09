@@ -4,7 +4,6 @@ import com.sun.mail.util.MailSSLSocketFactory;
 
 import java.io.*;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -129,6 +128,7 @@ public class EmailClient implements IEmailClient {
         return true;
     }
 
+    @Override
     public boolean send(List<String> to, String title, String content, InputStream fileInputStream,String fileName){
         //String from = "server@centaurstech.com";//change accordingly
         //String host = "smtp.exmail.qq.com";//or IP address

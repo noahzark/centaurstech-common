@@ -8,7 +8,6 @@ import org.hamcrest.core.IsNull;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import java.io.*;
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -23,12 +22,13 @@ public class ChatApiTest {
     //请求对话接口测试，post方法
     public void testChatApi() throws Exception {
         String uid = GetNetworkAddress.GetAddress("mac");
-        JSONObject result = this.testChatApi(uid, "你好啊");
+        JSONObject result = ChatApiTest.testDeprecationUsage(uid, "你好啊");
 
         assertThat(result.get("retcode"), is(0));
     }
 
-    static JSONObject testChatApi(String uid, String ask) throws Exception {
+    @SuppressWarnings("deprecation")
+    static JSONObject testDeprecationUsage(String uid, String ask) throws Exception {
         EngineQuery engineQuery = new EngineQueryProxy("/api/chat");
 
         String appkey = "qiwurobot";

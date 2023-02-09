@@ -23,6 +23,7 @@ public enum TimePeriod implements ComparablePeriod{
         return inPeriod(cal);
     }
 
+    @Override
     public Boolean inPeriod(Calendar cal) {
         int hours = cal.get(Calendar.HOUR_OF_DAY);
         switch (this) {

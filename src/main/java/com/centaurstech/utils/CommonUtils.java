@@ -17,11 +17,11 @@ public class CommonUtils {
         return !stringIsEmptyOrNull(s);
     }
 
-    public static boolean isCollectionEmptyOrNull(Collection targetCollection) {
+    public static boolean isCollectionEmptyOrNull(Collection<?> targetCollection) {
         return targetCollection == null || targetCollection.size() <= 0;
     }
 
-    public static boolean isCollectionEmptyOrNull(Map map) {
+    public static boolean isCollectionEmptyOrNull(Map<?, ?> map) {
         return map == null || map.size() <= 0;
     }
 }

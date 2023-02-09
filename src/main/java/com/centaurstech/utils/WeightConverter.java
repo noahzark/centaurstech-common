@@ -60,7 +60,7 @@ public class WeightConverter {
     }
 
     public static Double convert(Unit fromUnit, Double from, Unit toUnit) {
-        Double result = new Double(from);
+        Double result = Double.valueOf(from);
         result *= WeightConverter.toKg(fromUnit);
         result /= WeightConverter.toKg(toUnit);
         return result;

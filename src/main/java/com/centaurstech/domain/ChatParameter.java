@@ -1,6 +1,5 @@
 package com.centaurstech.domain;
 
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -36,7 +36,7 @@ public class EngineQueryProxy extends EngineQuery {
      *
      * @param formRequest
      */
-    public EngineQueryProxy(FormRequest formRequest) {
+    public EngineQueryProxy(FormRequest<?, ?> formRequest) {
         super(formRequest);
     }
 }

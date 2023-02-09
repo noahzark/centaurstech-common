@@ -7,7 +7,6 @@ import com.centaurstech.algorithm.DFAFilter.DfaResultNode;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -111,7 +110,6 @@ public class DFAFilterTest {
                 );
     }
     
-    @SuppressWarnings("deprecation")
     @Test
     public void testDFAFilterLegacy() {
         Set<String> sensitiveWordSet = new HashSet<>();
@@ -134,42 +132,42 @@ public class DFAFilterTest {
         assertList = Arrays.asList("white", "album", "季节");
         assertEquals(true, dfaFilter.contains(txt, MatchType.MAX, null, null));
         assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.MAX, null, null));
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MAX, null, null));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MAX, null, null).stream().map(it -> it.getText()).collect(Collectors.toList()));
         // with length filter
         assertList = Arrays.asList("white", "album");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MAX, 5, null));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MAX, 5, null).stream().map(it -> it.getText()).collect(Collectors.toList()));
         assertList = Arrays.asList("it", "季节");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MAX, null, 5));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MAX, null, 5).stream().map(it -> it.getText()).collect(Collectors.toList()));
         assertList = Arrays.asList("white", "album");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MAX, 5, 6));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MAX, 5, 6).stream().map(it -> it.getText()).collect(Collectors.toList()));
         
         // ------ MIN ------
         // without length filter
         assertList = Arrays.asList("white", "album", "季");
         assertEquals(true, dfaFilter.contains(txt, MatchType.MIN, null, null));
         assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.MIN, null, null));
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MIN, null, null));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MIN, null, null).stream().map(it -> it.getText()).collect(Collectors.toList()));
         // with length filter
         assertList = Arrays.asList("white", "album");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MIN, 5, null));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MIN, 5, null).stream().map(it -> it.getText()).collect(Collectors.toList()));
         assertList = Arrays.asList("it", "季");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MIN, null, 5));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MIN, null, 5).stream().map(it -> it.getText()).collect(Collectors.toList()));
         assertList = Arrays.asList("white", "album");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.MIN, 5, 6));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.MIN, 5, 6).stream().map(it -> it.getText()).collect(Collectors.toList()));
         
         // ------ ALL ------
         // without length filter
         assertList = Arrays.asList("white", "it", "album", "季", "季节");
         assertEquals(true, dfaFilter.contains(txt, MatchType.ALL, null, null));
         assertEquals(false, dfaFilter.contains(notMatchedTxt, MatchType.ALL, null, null));
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.ALL, null, null));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.ALL, null, null).stream().map(it -> it.getText()).collect(Collectors.toList()));
         // with length filter
         assertList = Arrays.asList("white", "album");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.ALL, 5, null));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.ALL, 5, null).stream().map(it -> it.getText()).collect(Collectors.toList()));
         assertList = Arrays.asList("it", "季", "季节");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.ALL, null, 5));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.ALL, null, 5).stream().map(it -> it.getText()).collect(Collectors.toList()));
         assertList = Arrays.asList("white", "album");
-        assertEquals(assertList, dfaFilter.getSensitiveWordList(txt, MatchType.ALL, 5, 6));
+        assertEquals(assertList, dfaFilter.getDfaResult(txt, MatchType.ALL, 5, 6).stream().map(it -> it.getText()).collect(Collectors.toList()));
     }
 
 }

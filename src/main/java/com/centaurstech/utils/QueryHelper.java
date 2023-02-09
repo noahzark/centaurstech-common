@@ -1,7 +1,5 @@
 package com.centaurstech.utils;
 
-import com.centaurstech.utils.encode.HttpUtil;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;

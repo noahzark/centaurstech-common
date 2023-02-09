@@ -1,6 +1,5 @@
 package com.centaurstech.domain;
 
-import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -13,10 +12,11 @@ import static org.junit.Assert.assertThat;
  */
 public class EngineQueryTest {
 
+    @SuppressWarnings("deprecation")
     @Test
     //对EngineQueryProxy各构造方法、get、hasValue的测试
-    public void testEngineQuery() {
-        HashMap<String, String> requestParam = new HashMap();
+    public void testOldUsage() {
+        HashMap<String, String> requestParam = new HashMap<>();
 
         requestParam.put("chat_key", "123456@@@987654");
         EngineQuery engineQuery = new EngineQueryProxy(requestParam);

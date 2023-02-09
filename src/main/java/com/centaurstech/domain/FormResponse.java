@@ -8,7 +8,7 @@ import java.util.List;
  * @author yws
  * @date 2020/05/21
  */
-public class FormResponse {
+public class FormResponse<Q, G> {
     public static class FormData<Q, G> {
         private Q vars;
 
@@ -54,12 +54,12 @@ public class FormResponse {
 
     private String msg;
 
-    private FormData data;
+    private FormData<Q, G> data;
 
     public FormResponse() {
     }
 
-    public FormResponse(Integer code, String msg, FormData data) {
+    public FormResponse(Integer code, String msg, FormData<Q, G> data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
@@ -81,11 +81,11 @@ public class FormResponse {
         this.msg = msg;
     }
 
-    public FormData getData() {
+    public FormData<Q, G> getData() {
         return data;
     }
 
-    public void setData(FormData data) {
+    public void setData(FormData<Q, G> data) {
         this.data = data;
     }
 
